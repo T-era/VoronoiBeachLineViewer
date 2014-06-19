@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+<style type="text/css">
+html, body {
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+	height: 100%;
+}
+div.border {
+	float: left;
+	border: 1px blue solid;
+}
+canvas {
+	float: left;
+}
+</style>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="JunkRack.js"></script>
+<script type="text/javascript" src="Circle.js"></script>
+<script type="text/javascript" src="Curv.js"></script>
+<script type="text/javascript" src="Event.js"></script>
+<script type="text/javascript" src="BeachLineNode.js"></script>
+<script type="text/javascript" src="BeachLine.js"></script>
+<script type="text/javascript">
+$(function() {
+	var canvas = $("#canvas")[0];
+	var context = canvas.getContext("2d");
+//	var seed = [{x:110,y:15},{x:100,y:20},{x:80,y:90},{x:120,y:100}];
+//	var seed = [{x: 80, y: 10},{x: 120, y: 40},{x: 160, y: 10}, { x: 20, y: 40 }, { x: 220, y: 40 }
+//		, { x: 80, y: 80 }, { x: 160, y: 80 }];
+	var seed = randomSeed(12);
+
+	var bl = new BeachLine(seed
+		, canvas);
+	$("#eventButton")
+		.bind("click", function() {
+			bl.stepNextEvent();
+			bl.draw(context);
+		});
+	$("#pixelButton")
+		.bind("click", function() {
+			bl.stepPixel();
+			bl.draw(context);
+		});
+	bl.draw(context);
+
+	function randomSeed(count) {
+		var array = [];
+		for (var i = 0; i < count; i ++) {
+			array.push({
+				x: Math.random() * canvas.width,
+				y: Math.random() * canvas.height
+			});
+		}
+		return array;
+	}
+});
+</script>
+	</head>
+	<body>
+		<canvas id="canvas">HTML5 Canvas required!</canvas>
+		<div class="border">
+			<div>
+				<input type="button" value="Next EVENT" id="eventButton" />
+			</div>
+			<div>
+				<input type="button" value="Next PIXEL" id="pixelButton" />
+			</div>
+		</div>
+	</body>
+</html>
