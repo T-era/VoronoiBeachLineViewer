@@ -24,20 +24,42 @@ BeachLineNode.prototype.willClose = function() {
 	}
 };
 
-BeachLineNode.prototype.containsRangeX = function(x, depth) {
+BeachLineNode.prototype.isXOn = function(x, depth, actions) {
 	if (this.prev && this.next) {
 		var p1 = this.prev.lr(curveCrosses(depth, this.mPoint, this.prev.mPoint));
 		var p2 = this     .lr(curveCrosses(depth, this.mPoint, this.next.mPoint));
 
-		return p1.x < x
-				&& x <= p2.x;
+		if (p1.x < x
+			&& x < p2.x) {
+			actions.whenContains();
+			return true;
+		} else if (x === p2.x) {
+			actions.whenJustEdge();
+			return true;
+		} else {
+			return false;
+		}
 	} else if (this.next) {
 		var p2 = this     .lr(curveCrosses(depth, this.mPoint, this.next.mPoint));
-		return x <= p2.x;
+		if (x < p2.x) {
+			actions.whenContains();
+			return true;
+		} else if (x === p2.x) {
+			actions.whenJustEdge();
+			return true;
+		} else {
+			return false;
+		}
 	} else if (this.prev) {
 		var p1 = this.prev.lr(curveCrosses(depth, this.mPoint, this.prev.mPoint));
-		return p1.x < x;
+		if (p1.x < x) {
+			actions.whenContains();
+			return true;
+		} else {
+			return false;
+		}
 	} else {
+		actions.whenContains();
 		return true;
 	}
 };
@@ -53,27 +75,31 @@ BeachLineNode.prototype.setNext = function(node, fLR) {
 BeachLineNode.prototype.addChild = function(newPoint) {
 	// 交点が一つしかないケース/交点が2つあるケース。
 	var twoCross = !(newPoint.y == this.mPoint.y);
-	var oldPrev = this.prev;
 	var oldNext = this.next;
-	var firstHalf = new BeachLineNode(this.mPoint, this.getSize());
+	var firstHalf = this;
 	var newNode = new BeachLineNode(newPoint, this.getSize());
 	firstHalf.setNext(newNode, function(c) { return c.left; });
-	if (this.prev) {
-		this.prev.setNext(firstHalf, this.prev.lr);
-	}
 	if (twoCross) {
 		var secondHalf = new BeachLineNode(this.mPoint, this.getSize());
 		newNode.setNext(secondHalf, function(c) { return c.right; });
-		secondHalf.setNext(this.next, this.lr);
+		secondHalf.setNext(oldNext, this.lr);
 		secondHalf.computeCircle();
 	}
 	firstHalf.computeCircle();
 	newNode.computeCircle();
-	if (oldPrev) oldPrev.computeCircle();
 	if (oldNext) oldNext.computeCircle();
-
-	return firstHalf;
 };
+
+/// このオブジェクトと、nextの間に新しいNodeを差し込みます。
+BeachLineNode.prototype.addBetweenNext = function(newPoint) {
+	var oldNext = this.next;
+	var newNode = new BeachLineNode(newPoint, this.getSize());
+	this.setNext(newNode, function(c) { return c.left; });
+	newNode.setNext(oldNext, function(c) { return c.right; });
+	newNode.computeCircle();
+	this.computeCircle();
+	oldNext.computeCircle();
+}
 
 BeachLineNode.prototype.remove = function() {
 	// 要素を削除(LinkedListを切り詰める)
@@ -120,14 +146,6 @@ BeachLineNode.prototype.forEach = function(f) {
 		f(temp);
 	}
 };
-BeachLineNode.prototype.seek = function(f) {
-	for (var temp = this; temp; temp = temp.next) {
-		if (f(temp)) {
-			return temp;
-		}
-	}
-	return null;
-}
 
 BeachLineNode.prototype.draw = function(context, depth) {
 	var c1 = this.prev ? curveCrosses(depth, this.prev.mPoint, this.mPoint) : null;

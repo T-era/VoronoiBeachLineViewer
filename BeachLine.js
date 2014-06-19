@@ -30,13 +30,11 @@ BeachLine.prototype.stepNextEvent = function() {
 	var nextCircle = this.getNextCircleEvent();
 
 	if (nextCircle) { // サークルイベントが起きないなら、サイトイベントを起こす。
-		event = toCircleEvent(nextCircle);
-		// 削除される場合、その中心はボロノイ点
-		this.voronoiPoints.push(nextCircle.circle.center);
+		event = toCircleEvent(nextCircle, this.voronoiPoints);
 	} else {
 		var nextPoint = this.getNextSight();
 		if (nextPoint) {
-			event = toSightEvent(nextPoint, this.getSize());
+			event = toSightEvent(nextPoint, this.voronoiPoints, this.getSize());
 			this.sightPointIndex ++;
 		} else {
 			event = {
