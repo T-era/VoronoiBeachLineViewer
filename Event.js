@@ -10,6 +10,9 @@ function toCircleEvent(removing, voronoiPoints) {
 		center: circle.center,
 		draw: function(context) {
 			circle.draw(context);
+		},
+		toString: function() {
+			return "Circle " + showPoint(removing.circle.center);
 		}
 	};
 }
@@ -45,6 +48,13 @@ function toSightEvent(newPoint, voronoiPoints, size) {
 			context.moveTo(newPoint.x, newPoint.y);
 			context.lineTo(newPoint.x, 0);
 			context.stroke();
+		},
+		toString: function() {
+			return "Sight " + showPoint(newPoint);
 		}
 	};
+}
+function showPoint(p) {
+	return "(" + dTo_2s(p.x) + ", " + dTo_2s(p.y) + ")";
+
 }

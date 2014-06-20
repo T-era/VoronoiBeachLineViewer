@@ -1,8 +1,26 @@
-function BeachLine(seed, size) {
-	this.getSize = function() { return size; };
+function BeachLine(arg, logger) {
 	this.voronoiPoints = [];
 	this.sightPointIndex = 0;
 	this.depth = 0;
+	var seed = [];
+	(function() {
+		// 重複する要素を除外
+		var prev = null;
+		arg.sort(function(a, b) {
+			if (a.y == b.y) {
+				return a.x - b.x;
+			} else {
+				return a.y - b.y;
+			}
+		}).forEach(function(p) {
+			if (!prev
+				|| !d_same(p.x, prev.x)
+				|| !d_same(p.y, prev.y)) {
+				seed.push(p);
+			}
+			prev = p
+		});
+	})();
 	this.seedCount = seed.length;
 	var seedSortedByY = seed.sort(function(a, b) {
 		if (a.y == b.y) {
@@ -22,6 +40,8 @@ function BeachLine(seed, size) {
 	this.getNextSight = function() {
 		return this.getSeedAt(this.sightPointIndex);
 	};
+
+	this.logger = logger;
 }
 
 BeachLine.prototype.stepNextEvent = function() {
@@ -34,11 +54,11 @@ BeachLine.prototype.stepNextEvent = function() {
 	} else {
 		var nextPoint = this.getNextSight();
 		if (nextPoint) {
-			event = toSightEvent(nextPoint, this.voronoiPoints, this.getSize());
+			event = toSightEvent(nextPoint, this.voronoiPoints);
 			this.sightPointIndex ++;
 		} else {
 			event = {
-				eventBorder: this.getSize().height * 2,
+				eventBorder: getWorldSize().height * 2,
 				action: function(topNode) { return topNode; },
 				draw: function(context) {}
 			};
@@ -49,6 +69,7 @@ BeachLine.prototype.stepNextEvent = function() {
 	this.topNode = event.action(this.topNode);
 	this.lastEvent = event;
 	this.depth = event.eventBorder;
+	this.logger("Event:@" + dTo_2s(this.depth) + " " + event.toString());
 };
 
 BeachLine.prototype.stepPixel = function() {
@@ -65,11 +86,12 @@ BeachLine.prototype.stepPixel = function() {
 	} else {
 		this.depth = nextDepth;
 		this.lastEvent = null;
+		this.logger("Step to " + dTo_2s(this.depth));
 	}
 };
 
 BeachLine.prototype.draw = function(context) {
-	var size = this.getSize();
+	var size = getWorldSize();
 	context.clearRect(0,0, size.width, size.height);
 
 	if (this.lastEvent)
@@ -78,7 +100,7 @@ BeachLine.prototype.draw = function(context) {
 	context.beginPath();
 	context.strokeStyle = "#aaa";
 	context.moveTo(0, this.depth);
-	context.lineTo(this.getSize().width, this.depth);
+	context.lineTo(size.width, this.depth);
 	context.stroke();
 
 	if (this.topNode) {

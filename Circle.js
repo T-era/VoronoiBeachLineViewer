@@ -11,11 +11,15 @@ function createCircle(p1, p2, p3) {
 	var f = - determinant(p1.x * p1.x + p1.y * p1.y, p1.x, p1.y,
 			p2.x * p2.x + p2.y * p2.y, p2.x, p2.y,
 			p3.x * p3.x + p3.y * p3.y, p3.x, p3.y);
-	var y0 = - e / 2.0 / a;
-	var x0 = - d / 2.0 / a;
-	var r = Math.sqrt((d * d + e * e) / 4.0 / a / a - f / a);
+	if (d_same(a, 0)) {
+		return null;
+	} else {
+		var y0 = - e / 2.0 / a;
+		var x0 = - d / 2.0 / a;
+		var r = Math.sqrt((d * d + e * e) / 4.0 / a / a - f / a);
 
-	return new Circle({ x: x0, y: y0 }, r);
+		return new Circle({ x: x0, y: y0 }, r);
+	}
 
 	function determinant(a, b, c,
 			d, e, f,

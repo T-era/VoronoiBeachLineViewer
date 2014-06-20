@@ -1,12 +1,15 @@
-function BeachLineNode(motherPoint, size) {
+function BeachLineNode(motherPoint) {
 	this.mPoint = motherPoint;
-	this.getSize = function() { return size; };
 }
 BeachLineNode.prototype.computeCircle = function() {
 	if (this.prev && this.next) {
 		var circle = createCircle(this.mPoint, this.prev.mPoint, this.next.mPoint);
 		this.circle = circle;
-		this.circleEventDepth = circle.center.y + circle.r;
+		if (circle) {
+			this.circleEventDepth = circle.center.y + circle.r;
+		} else {
+			delete this.circleEventDepth;
+		}
 	}
 };
 
@@ -68,7 +71,6 @@ BeachLineNode.prototype.setNext = function(node, fLR) {
 	this.lr = fLR;
 	if (node) {
 		node.prev = this;
-//		node.lr = fLR; TODO どっちだっけ？
 	}
 };
 
@@ -77,12 +79,13 @@ BeachLineNode.prototype.addChild = function(newPoint) {
 	var twoCross = !(newPoint.y == this.mPoint.y);
 	var oldNext = this.next;
 	var firstHalf = this;
-	var newNode = new BeachLineNode(newPoint, this.getSize());
+	var oldLR = this.lr;
+	var newNode = new BeachLineNode(newPoint);
 	firstHalf.setNext(newNode, function(c) { return c.left; });
 	if (twoCross) {
-		var secondHalf = new BeachLineNode(this.mPoint, this.getSize());
+		var secondHalf = new BeachLineNode(this.mPoint);
 		newNode.setNext(secondHalf, function(c) { return c.right; });
-		secondHalf.setNext(oldNext, this.lr);
+		secondHalf.setNext(oldNext, oldLR);
 		secondHalf.computeCircle();
 	}
 	firstHalf.computeCircle();
@@ -93,7 +96,7 @@ BeachLineNode.prototype.addChild = function(newPoint) {
 /// このオブジェクトと、nextの間に新しいNodeを差し込みます。
 BeachLineNode.prototype.addBetweenNext = function(newPoint) {
 	var oldNext = this.next;
-	var newNode = new BeachLineNode(newPoint, this.getSize());
+	var newNode = new BeachLineNode(newPoint);
 	this.setNext(newNode, function(c) { return c.left; });
 	newNode.setNext(oldNext, function(c) { return c.right; });
 	newNode.computeCircle();
@@ -103,29 +106,19 @@ BeachLineNode.prototype.addBetweenNext = function(newPoint) {
 
 BeachLineNode.prototype.remove = function() {
 	// 要素を削除(LinkedListを切り詰める)
-	if (this.prev) {
-		// LRを引き継ぐ。 深い方のLRを設定。
-		var lr = this.prev.mPoint.y > this.next.mPoint.y
-				? this.prev.lr
-				: this.     lr;
+	// LRを引き継ぐ。 深い方のLRを設定。
+	var lr = this.prev.mPoint.y > this.next.mPoint.y
+			? this.prev.lr
+			: this.     lr;
 
-		this.prev.next = this.next;
-		this.prev.lr = lr;
+	this.prev.next = this.next;
+	this.prev.lr = lr;
 
-		if (this.next) {
-			this.next.prev = this.prev;
-		}
-		this.prev.computeCircle();
-		if (this.next) this.next.computeCircle();
-		this.computeCircle(); // TODO 削除？？
-		return this.topNode();
-	} else {
-		// ここはtopNode。
-		if (this.next) {
-			this.next.prev = null;
-		}
-		return this.next;
-	}
+	this.next.prev = this.prev;
+	this.prev.computeCircle();
+	if (this.next) this.next.computeCircle();
+//		this.computeCircle(); // TODO 削除？？
+	return this.topNode();
 };
 
 // コレクション操作
@@ -148,12 +141,13 @@ BeachLineNode.prototype.forEach = function(f) {
 };
 
 BeachLineNode.prototype.draw = function(context, depth) {
+	var size = getWorldSize();
 	var c1 = this.prev ? curveCrosses(depth, this.prev.mPoint, this.mPoint) : null;
 	var c2 = this.next ? curveCrosses(depth, this.mPoint, this.next.mPoint) : null;
 	var p1 = c1 ? this.prev.lr(c1) : { x: 0, y: 0 };
-	var p2 = c2 ? this     .lr(c2) : { x: this.getSize().width, y: 0 };
+	var p2 = c2 ? this     .lr(c2) : { x: size.width, y: 0 };
 
 	context.strokeStyle = "#aaa";
 	var curve = getCurve(depth - this.mPoint.y, this.mPoint);
-	curve.draw(context, Math.max(p1.x, 0), Math.min(p2.x, this.getSize().width));
+	curve.draw(context, Math.max(p1.x, 0), Math.min(p2.x, size.width));
 }
