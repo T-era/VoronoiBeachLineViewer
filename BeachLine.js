@@ -1,5 +1,11 @@
 function BeachLine(arg, logger) {
 	this.voronoiPoints = [];
+	this.voronoiPoints.add = function(vPoint, m1, m2, m3) {
+		this.push(vPoint);
+		m1.addVPoint(vPoint,m2,m3);
+		m2.addVPoint(vPoint,m1,m3);
+		m3.addVPoint(vPoint,m1,m2);
+	};
 	this.sightPointIndex = 0;
 	this.depth = 0;
 	var seed = [];
@@ -14,9 +20,9 @@ function BeachLine(arg, logger) {
 			}
 		}).forEach(function(p) {
 			if (!prev
-				|| !d_same(p.x, prev.x)
-				|| !d_same(p.y, prev.y)) {
-				seed.push(p);
+				|| !d_same(p.x, prev.x, 0.1)
+				|| !d_same(p.y, prev.y, 0.1)) {
+				seed.push(new MPoint(p));
 			}
 			prev = p
 		});
@@ -46,6 +52,7 @@ function BeachLine(arg, logger) {
 
 BeachLine.prototype.stepNextEvent = function() {
 	var event = null;
+	var done = false;
 
 	var nextCircle = this.getNextCircleEvent();
 
@@ -62,6 +69,7 @@ BeachLine.prototype.stepNextEvent = function() {
 				action: function(topNode) { return topNode; },
 				draw: function(context) {}
 			};
+			done = true;
 		}
 	}
 
@@ -70,6 +78,7 @@ BeachLine.prototype.stepNextEvent = function() {
 	this.lastEvent = event;
 	this.depth = event.eventBorder;
 	this.logger("Event:@" + dTo_2s(this.depth) + " " + event.toString());
+	return done;
 };
 
 BeachLine.prototype.stepPixel = function() {
@@ -111,17 +120,16 @@ BeachLine.prototype.draw = function(context) {
 	}
 	for (var i = 0, max = this.seedCount; i < max; i ++) {
 		var p = this.getSeedAt(i);
-		context.beginPath();
-		context.strokeStyle = "#00f";
-		context.arc(p.x, p.y, 2, 0, 7);
-		context.stroke();
+		p.draw(context);
 	}
-	context.strokeStyle = "#f00";
-	this.voronoiPoints.forEach(function(v) {
-		context.beginPath();
-		context.arc(v.x, v.y, 2, 0, 7);
-		context.stroke();
-	});
+	if (!BeachLine.isGiraffeMode) {
+		context.strokeStyle = "#f00";
+		this.voronoiPoints.forEach(function(v) {
+			context.beginPath();
+			context.arc(v.x, v.y, 2, 0, 7);
+			context.stroke();
+		});
+	}
 };
 
 BeachLine.prototype.getNextCircleEvent = function() {

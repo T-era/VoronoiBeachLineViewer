@@ -1,5 +1,6 @@
-function d_same(a, b) {
-	return Math.abs(a-b) < 0.000001;
+function d_same(a, b, border) {
+	if (!border) border = 0.0001;
+	return Math.abs(a-b) < border;
 }
 
 function dTo_2s(d) {

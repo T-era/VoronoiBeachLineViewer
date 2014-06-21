@@ -4,7 +4,7 @@ function toCircleEvent(removing, voronoiPoints) {
 		eventBorder: circle.center.y + circle.r,
 		action: function(topNode) {
 			// 削除される場合、その中心はボロノイ点
-			voronoiPoints.push(removing.circle.center);
+			voronoiPoints.add(removing.circle.center, removing.mPoint, removing.prev.mPoint, removing.next.mPoint);
 			return removing.remove();
 		},
 		center: circle.center,
@@ -29,7 +29,8 @@ function toSightEvent(newPoint, voronoiPoints, size) {
 						whenJustEdge: function() {
 							// レアケース:newPointがちょうど交点の真下(xが一致する位置)にある場合
 							// 同時にボロノイ点追加。
-							voronoiPoints.push(createCircle(newPoint,temp.mPoint,temp.next.mPoint).center);
+							var vPoint = createCircle(newPoint, temp.mPoint, temp.next.mPoint).center
+							voronoiPoints.add(vPoint, newPoint, temp.mPoint, temp.next.mPoint);
 							temp.addBetweenNext(newPoint);
 							delete temp.next.circleEventDepth;// ボロノイ点処理済み
 						}

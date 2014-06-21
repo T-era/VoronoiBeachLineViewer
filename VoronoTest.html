@@ -28,6 +28,7 @@ input {
 <script type="text/javascript" src="Event.js"></script>
 <script type="text/javascript" src="BeachLineNode.js"></script>
 <script type="text/javascript" src="BeachLine.js"></script>
+<script type="text/javascript" src="MotherPoint.js"></script>
 <script type="text/javascript">
 function getWorldSize() {
 	return $("#canvas")[0];
@@ -39,13 +40,13 @@ $(function() {
 	canvas.height = canvas.width * canvas.offsetHeight / canvas.offsetWidth;
 	var context = canvas.getContext("2d");
 	
-//	var seed = [{x:110,y:15},{x:100,y:20},{x:80,y:90},{x:120,y:100}];
+	var seed = [{x:110,y:15},{x:115,y:45},{x:80,y:40},{x:150,y:50},{x:90,y:80},{x:116,y:70},{x:120,y:70}];
 //	var seed = [{x:80,y:10},{x:120,y:40},{x:160,y:10},{x:20,y:40},{x:220,y:40}
 //		,{x:80,y:80},{x:160,y:80}];
-	var seed = randomSeed(12);
+//	var seed = randomSeed(12);
 
 	var bl = new BeachLine(seed
-		, canvas);
+		, function(){});
 	$("#eventButton")
 		.bind("click", function() {
 			bl.stepNextEvent();

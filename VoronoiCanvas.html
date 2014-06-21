@@ -31,6 +31,7 @@ input {
 <script type="text/javascript" src="Event.js"></script>
 <script type="text/javascript" src="BeachLineNode.js"></script>
 <script type="text/javascript" src="BeachLine.js"></script>
+<script type="text/javascript" src="MotherPoint.js"></script>
 <script type="text/javascript">
 function getWorldSize() {
 	return $("#canvas")[0];
@@ -69,6 +70,8 @@ $(function() {
 			beachLine.stepPixel();
 			beachLine.draw(context);
 		});
+		$("#runButton").click(runAll);
+		$("#runButton1").click(skipAll);
 		$("#putRandom").click(function() {
 			for (var i = 0; i < 10; i ++) {
 				seed.push({
@@ -84,6 +87,7 @@ $(function() {
 		});
 		$("#backToInit").click(initMode);
 		$("#done").click(stepMode);
+		$("#giraffeMode").click(setGiraffeMode);
 		cnv.click(function(arg) {
 			if (isInitMode) {
 				var target = arg.target;
@@ -100,6 +104,25 @@ $(function() {
 				context.arc(p.x, p.y, 2, 0, 7);
 				context.stroke();
 			});
+		}
+		function runAll() {
+			var done = beachLine.stepNextEvent();
+			beachLine.draw(context);
+			
+			if (!done) {
+				setTimeout(runAll, 1);
+			}
+		}
+		function skipAll() {
+			do {
+			} while (!beachLine.stepNextEvent());
+			beachLine.draw(context);
+		}
+		function setGiraffeMode(event) {
+			var flg = event.target.checked;
+			cnv.css({background: flg ? "#a80" : "#fff" });
+			BeachLine.isGiraffeMode = flg;
+			MPoint.isGiraffeMode = flg;
 		}
 	}
 
@@ -143,8 +166,12 @@ $(function() {
 			<div class="border" id="BeachLineControl">
 				<input type="button" value="Next EVENT" id="eventButton" />
 				<input type="button" value="Next PIXEL" id="pixelButton" />
+				<input type="button" value="Run Through" id="runButton" />
+				<input type="button" value="(no animation)" id="runButton1" />
 				<hr/>
 				<input type="button" value="母点の配置を変える" id="backToInit" />
+				<hr/>
+				<input type="checkbox" id="giraffeMode" style="display: inline;" />きりんがすき。
 			</div>
 			<div class="border" id="Initializer">
 				<input type="button" value="ランダムに配置する" id="putRandom" />
