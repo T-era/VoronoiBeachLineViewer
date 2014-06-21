@@ -120,6 +120,7 @@ $(function() {
 		}
 		function setGiraffeMode(event) {
 			var flg = event.target.checked;
+			if (!flg) alert("マジで...!?");
 			cnv.css({background: flg ? "#a80" : "#fff" });
 			BeachLine.isGiraffeMode = flg;
 			MPoint.isGiraffeMode = flg;

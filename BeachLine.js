@@ -28,6 +28,7 @@ function BeachLine(arg, logger) {
 		});
 	})();
 	this.seedCount = seed.length;
+	logger(seed.length + "　points.");
 	var seedSortedByY = seed.sort(function(a, b) {
 		if (a.y == b.y) {
 			return a.x - b.x;
