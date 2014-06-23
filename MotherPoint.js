@@ -12,22 +12,33 @@ MPoint.prototype.toString = function() {
 	return this.str;
 };
 MPoint.prototype.addVPoint = function(vPoint, buddy1, buddy2) {
-	var vWith1 = this.lonleyNeighbor[buddy1];
-	var vWith2 = this.lonleyNeighbor[buddy2];
-	add.call(this, vWith1, buddy1);
-	add.call(this, vWith2, buddy2);
+	add.call(this, buddy1, buddy2);
+	add.call(this, buddy2, buddy1);
 
-	function add(newVPoint, buddyWith) {
-		if (newVPoint) {
+	function add(mp1, mp2) {
+		var ln = this.lonleyNeighbor[mp1];
+		if (ln) {
+			var newVPoint = ln.v;
 			this.voronoiLines.push({
 				p1: vPoint,
 				p2: newVPoint
 			});
+			delete this.lonleyNeighbor[mp1];
 		} else {
-			this.lonleyNeighbor[buddyWith] = vPoint;
+			this.lonleyNeighbor[mp1] = { k: mp1, v: vPoint, w: mp2 };
 		}
 	}
 };
+
+MPoint.prototype.finalize = function() {
+	for (var str in this.lonleyNeighbor) {
+		var mp = this.lonleyNeighbor[str].k;
+		var vp = this.lonleyNeighbor[str].v;
+		var another = this.lonleyNeighbor[str].w;
+		var l = getBisector(vp, this, mp, another);
+		this.voronoiLines.push(l);
+	}
+}
 
 MPoint.prototype.draw = function(context) {
 	if (! MPoint.isGiraffeMode) {

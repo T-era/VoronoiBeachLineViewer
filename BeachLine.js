@@ -67,7 +67,12 @@ BeachLine.prototype.stepNextEvent = function() {
 		} else {
 			event = {
 				eventBorder: getWorldSize().height * 2,
-				action: function(topNode) { return topNode; },
+				action: function(topNode) {
+					topNode.forEach(function(node) {
+						node.mPoint.finalize();
+					});
+					return topNode; 
+				},
 				draw: function(context) {}
 			};
 			done = true;
