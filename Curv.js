@@ -1,5 +1,5 @@
 function getCurve(depthBy, focus) {
-	if (depthBy === 0) {
+	if (d_same(depthBy, 0)) {
 		var vertical = new Vertical();
 		vertical.x = focus.x;
 		return vertical;

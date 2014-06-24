@@ -1,4 +1,9 @@
-function createCircle(p1, p2, p3) {
+function Circle(center, r) {
+	this.center = center;
+	this.r = r;
+}
+
+Circle.create = function(p1, p2, p3) {
 	var d = - determinant(p1.x * p1.x + p1.y * p1.y, p1.y, 1,
 			p2.x * p2.x + p2.y * p2.y, p2.y, 1,
 			p3.x * p3.x + p3.y * p3.y, p3.y, 1);
@@ -33,10 +38,6 @@ function createCircle(p1, p2, p3) {
 	}
 }
 
-function Circle(center, r) {
-	this.center = center;
-	this.r = r;
-}
 Circle.prototype.draw = function(context) {
 	context.beginPath();
 	context.strokeStyle = "#f88";

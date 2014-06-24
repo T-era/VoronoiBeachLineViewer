@@ -3,7 +3,7 @@ function BeachLineNode(motherPoint) {
 }
 BeachLineNode.prototype.computeCircle = function() {
 	if (this.prev && this.next) {
-		var circle = createCircle(this.mPoint, this.prev.mPoint, this.next.mPoint);
+		var circle = Circle.create(this.mPoint, this.prev.mPoint, this.next.mPoint);
 		this.circle = circle;
 		if (circle) {
 			this.circleEventDepth = circle.center.y + circle.r;
@@ -14,7 +14,10 @@ BeachLineNode.prototype.computeCircle = function() {
 };
 
 BeachLineNode.prototype.willClose = function() {
-	if (this.prev && this.next) {
+	if (d_same(this.circleEventDepth, this.mPoint.y)) {
+		// 交点直下でSightイベントが発生する場合への対処。
+		return false;
+	} else if (this.prev && this.next) {
 		var c1 = curveCrosses(this.circleEventDepth, this.mPoint, this.prev.mPoint);
 		var c2 = curveCrosses(this.circleEventDepth, this.mPoint, this.next.mPoint);
 		var pl = this.prev.lr(c1);
@@ -27,42 +30,20 @@ BeachLineNode.prototype.willClose = function() {
 	}
 };
 
-BeachLineNode.prototype.isXOn = function(x, depth, actions) {
+BeachLineNode.prototype.containsRangeX = function(x, depth) {
 	if (this.prev && this.next) {
 		var p1 = this.prev.lr(curveCrosses(depth, this.mPoint, this.prev.mPoint));
 		var p2 = this     .lr(curveCrosses(depth, this.mPoint, this.next.mPoint));
 
-		if (p1.x < x
-			&& x < p2.x) {
-			actions.whenContains();
-			return true;
-		} else if (x === p2.x) {
-			actions.whenJustEdge();
-			return true;
-		} else {
-			return false;
-		}
+		return p1.x <= x
+				&& x < p2.x;
 	} else if (this.next) {
 		var p2 = this     .lr(curveCrosses(depth, this.mPoint, this.next.mPoint));
-		if (x < p2.x) {
-			actions.whenContains();
-			return true;
-		} else if (x === p2.x) {
-			actions.whenJustEdge();
-			return true;
-		} else {
-			return false;
-		}
+		return x < p2.x;
 	} else if (this.prev) {
 		var p1 = this.prev.lr(curveCrosses(depth, this.mPoint, this.prev.mPoint));
-		if (p1.x < x) {
-			actions.whenContains();
-			return true;
-		} else {
-			return false;
-		}
+		return p1.x <= x;
 	} else {
-		actions.whenContains();
 		return true;
 	}
 };
@@ -91,18 +72,9 @@ BeachLineNode.prototype.addChild = function(newPoint) {
 	firstHalf.computeCircle();
 	newNode.computeCircle();
 	if (oldNext) oldNext.computeCircle();
-};
 
-/// このオブジェクトと、nextの間に新しいNodeを差し込みます。
-BeachLineNode.prototype.addBetweenNext = function(newPoint) {
-	var oldNext = this.next;
-	var newNode = new BeachLineNode(newPoint);
-	this.setNext(newNode, function(c) { return c.left; });
-	newNode.setNext(oldNext, function(c) { return c.right; });
-	newNode.computeCircle();
-	this.computeCircle();
-	oldNext.computeCircle();
-}
+	return firstHalf;
+};
 
 BeachLineNode.prototype.remove = function() {
 	// 要素を削除(LinkedListを切り詰める)
@@ -117,11 +89,19 @@ BeachLineNode.prototype.remove = function() {
 	this.next.prev = this.prev;
 	this.prev.computeCircle();
 	if (this.next) this.next.computeCircle();
-//		this.computeCircle(); // TODO 削除？？
 	return this.topNode();
 };
 
 // コレクション操作
+BeachLineNode.prototype.seek = function(f) {
+	for (var temp = this; temp; temp = temp.next) {
+		if (f(temp)) {
+			return temp;
+		}
+	}
+	return null;
+}
+
 BeachLineNode.prototype.addToList = function(list) {
 	for (var temp = this; temp; temp = temp.next) {
 		list.push(temp);

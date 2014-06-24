@@ -1,6 +1,6 @@
 function BeachLine(arg, logger) {
 	this.voronoiPoints = [];
-	this.voronoiPoints.add = function(vPoint, m1, m2, m3) {
+	this.voronoiPoints.addVPoint = function(vPoint, m1, m2, m3) {
 		this.push(vPoint);
 		m1.addVPoint(vPoint,m2,m3);
 		m2.addVPoint(vPoint,m1,m3);
@@ -8,25 +8,10 @@ function BeachLine(arg, logger) {
 	};
 	this.sightPointIndex = 0;
 	this.depth = 0;
-	var seed = [];
-	(function() {
-		// 重複する要素を除外
-		var prev = null;
-		arg.sort(function(a, b) {
-			if (a.y == b.y) {
-				return a.x - b.x;
-			} else {
-				return a.y - b.y;
-			}
-		}).forEach(function(p) {
-			if (!prev
-				|| !d_same(p.x, prev.x, 0.1)
-				|| !d_same(p.y, prev.y, 0.1)) {
-				seed.push(new MPoint(p));
-			}
-			prev = p
-		});
-	})();
+	var seed = uniqueList(arg, function(p1, p2) {
+		return d_same(p1.x, p2.x, 0.1)
+			&& d_same(p1.y, p2.y, 0.1);
+	});
 	this.seedCount = seed.length;
 	logger(seed.length + "　points.");
 	var seedSortedByY = seed.sort(function(a, b) {

@@ -4,7 +4,7 @@ function toCircleEvent(removing, voronoiPoints) {
 		eventBorder: circle.center.y + circle.r,
 		action: function(topNode) {
 			// 削除される場合、その中心はボロノイ点
-			voronoiPoints.add(removing.circle.center, removing.mPoint, removing.prev.mPoint, removing.next.mPoint);
+			voronoiPoints.addVPoint(removing.circle.center, removing.mPoint, removing.prev.mPoint, removing.next.mPoint);
 			return removing.remove();
 		},
 		center: circle.center,
@@ -21,24 +21,11 @@ function toSightEvent(newPoint, voronoiPoints, size) {
 		eventBorder: newPoint.y,
 		action: function(topNode) {
 			if (topNode) {
-				for (var temp = topNode; temp; temp = temp.next) {
-					if (temp.isXOn(newPoint.x, newPoint.y, {
-						whenContains: function() {
-							temp.addChild(newPoint);
-						},
-						whenJustEdge: function() {
-							// レアケース:newPointがちょうど交点の真下(xが一致する位置)にある場合
-							// 同時にボロノイ点追加。
-							var vPoint = createCircle(newPoint, temp.mPoint, temp.next.mPoint).center
-							voronoiPoints.add(vPoint, newPoint, temp.mPoint, temp.next.mPoint);
-							temp.addBetweenNext(newPoint);
-							delete temp.next.circleEventDepth;// ボロノイ点処理済み
-						}
-					})) {
-						return temp.topNode();
-					}
-				}
-				throw "??";
+				var ownerNode = topNode.seek(function(node) {
+					return node.containsRangeX(newPoint.x, newPoint.y);
+				});
+				var node = ownerNode.addChild(newPoint);
+				return node.topNode();
 			} else {
 				return new BeachLineNode(newPoint, size);
 			}
@@ -54,8 +41,4 @@ function toSightEvent(newPoint, voronoiPoints, size) {
 			return "Sight " + showPoint(newPoint);
 		}
 	};
-}
-function showPoint(p) {
-	return "(" + dTo_2s(p.x) + ", " + dTo_2s(p.y) + ")";
-
 }
