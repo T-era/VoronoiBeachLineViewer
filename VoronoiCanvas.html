@@ -25,22 +25,13 @@ input {
 }
 </style>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script type="text/javascript" src="JunkRack.js"></script>
-<script type="text/javascript" src="Circle.js"></script>
-<script type="text/javascript" src="Curv.js"></script>
-<script type="text/javascript" src="Event.js"></script>
-<script type="text/javascript" src="BeachLineNode.js"></script>
-<script type="text/javascript" src="BeachLine.js"></script>
-<script type="text/javascript" src="MotherPoint.js"></script>
-<script type="text/javascript" src="Line.js"></script>
 <script type="text/javascript">
-function getWorldSize() {
-	return $("#canvas")[0];
-}
+Voronoi = {};
 
 $(function() {
 	var cnv = $("#canvas");
 	var canvas = cnv[0];
+	Voronoi.WorldSize = canvas;
 	// 表示上のサイズに合わせて、描画領域のサイズを設定。(円が丸っこく見えるように)
 	canvas.height = canvas.width * canvas.offsetHeight / canvas.offsetWidth;
 
@@ -123,8 +114,8 @@ $(function() {
 			var flg = event.target.checked;
 			if (!flg) alert("マジで...!?");
 			cnv.css({background: flg ? "#a80" : "#fff" });
-			BeachLine.isGiraffeMode = flg;
-			MPoint.isGiraffeMode = flg;
+			Voronoi.BeachLine.isGiraffeMode = flg;
+			Voronoi.MPoint.isGiraffeMode = flg;
 		}
 	}
 
@@ -141,7 +132,7 @@ $(function() {
 		$("#Initializer").hide();
 		$("#BeachLineControl").show();
 
-		beachLine = new BeachLine(seed, logAppend);
+		beachLine = new Voronoi.BeachLine(seed, logAppend);
 	}
 
 	function logAppend(str) {
@@ -160,6 +151,14 @@ $(function() {
 	}
 });
 </script>
+<script type="text/javascript" src="JunkRack.js"></script>
+<script type="text/javascript" src="Circle.js"></script>
+<script type="text/javascript" src="Curv.js"></script>
+<script type="text/javascript" src="BeachLine.js"></script>
+<script type="text/javascript" src="BeachLineNode.js"></script>
+<script type="text/javascript" src="Event.js"></script>
+<script type="text/javascript" src="MotherPoint.js"></script>
+<script type="text/javascript" src="Line.js"></script>
 	</head>
 	<body>
 		<canvas id="canvas" width="1000">HTML5 Canvas required!</canvas>

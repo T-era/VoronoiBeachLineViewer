@@ -22,34 +22,27 @@ input {
 }
 </style>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script type="text/javascript" src="JunkRack.js"></script>
-<script type="text/javascript" src="Circle.js"></script>
-<script type="text/javascript" src="Curv.js"></script>
-<script type="text/javascript" src="Event.js"></script>
-<script type="text/javascript" src="BeachLineNode.js"></script>
-<script type="text/javascript" src="BeachLine.js"></script>
-<script type="text/javascript" src="MotherPoint.js"></script>
-<script type="text/javascript" src="Line.js"></script>
 <script type="text/javascript">
-function getWorldSize() {
-	return $("#canvas")[0];
-}
-
+Voronoi = {};
 $(function() {
 	var canvas = $("#canvas")[0];
+	Voronoi.WorldSize = canvas;
 	// 表示上のサイズに合わせて、描画領域のサイズを設定。(円が丸っこく見えるように)
 	canvas.height = canvas.width * canvas.offsetHeight / canvas.offsetWidth;
 	var context = canvas.getContext("2d");
 	
 //	var seed = [{x:110,y:15},{x:115,y:45},{x:80,y:40},{x:150,y:50},{x:90,y:80},{x:116,y:70},{x:120,y:70}];
-	var seed = [{x:80,y:60},{x:160,y:60}
-		,{x:120,y:90},{x:20,y:90},{x:220,y:90}
-		,{x:80,y:130},{x:160,y:130}];
+	var seed = [{x:80,y:80},{x:160,y:80},{x:240,y:80},{x:320,y:80}
+		,{x:40,y:120},{x:120,y:120},{x:200,y:120},{x:280,y:120},{x:360,y:120}
+		,{x:80,y:160},{x:160,y:160},{x:240,y:160},{x:320,y:160}
+		,{x:40,y:200},{x:120,y:200},{x:200,y:200},{x:280,y:200},{x:360,y:200}
+		,{x:80,y:240},{x:160,y:240},{x:240,y:240},{x:320,y:240}
+		];
 //	var seed = [{x:60,y:80},{x:90,y:120},{x:60,y:160},{x:90,y:20},{x:90,y:220}
 //		,{x:130,y:80},{x:130,y:160}];
 //	var seed = randomSeed(12);
 
-	var bl = new BeachLine(seed
+	var bl = new Voronoi.BeachLine(seed
 		, function(){});
 	$("#eventButton")
 		.bind("click", function() {
@@ -75,6 +68,14 @@ $(function() {
 	}
 });
 </script>
+<script type="text/javascript" src="JunkRack.js"></script>
+<script type="text/javascript" src="Circle.js"></script>
+<script type="text/javascript" src="Curv.js"></script>
+<script type="text/javascript" src="BeachLine.js"></script>
+<script type="text/javascript" src="BeachLineNode.js"></script>
+<script type="text/javascript" src="Event.js"></script>
+<script type="text/javascript" src="MotherPoint.js"></script>
+<script type="text/javascript" src="Line.js"></script>
 	</head>
 	<body>
 		<canvas id="canvas" width="1000">HTML5 Canvas required!</canvas>

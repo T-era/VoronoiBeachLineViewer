@@ -16,18 +16,19 @@ function dTo_2s(d) {
 }
 
 /// 受け取ったリストから重複する要素を除外し、新しいリストにして返します。
-function uniqueList(arg, fIsSame) {
+function uniqueList(arg, fIsSame, fMap) {
+	if (!fMap) fMap = function(a) { return a; };
 	var temp = [];
-	for (var i = 0, iMax = arg.length - 1; i < iMax; i ++) {
+	for (var i = 0, iMax = arg.length; i < iMax; i ++) {
 		var target = arg[i];
 		var hasSame = false;
 		for (var j = i + 1, jMax　= arg.length; j < jMax; j ++) {
-			if (fIsSame(arg[j])) {
+			if (fIsSame(target, arg[j])) {
 				hasSame = true;
 				break;
 			}
 		}
-		if (! hasSame) temp.push(target);
+		if (! hasSame) temp.push(fMap(target));
 	}
 	return temp;
 }
