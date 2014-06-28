@@ -55,7 +55,7 @@
 
 		if (Voronoi.MPoint.isGiraffeMode) {
 			context.lineWidth = 10;
-			context.strokeStyle = "#ff0";
+			context.strokeStyle = "#ff8";
 		} else {
 			context.strokeStyle = "#080"
 		}
