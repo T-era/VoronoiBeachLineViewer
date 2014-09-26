@@ -12,7 +12,7 @@ Line.prototype.draw = function(context) {
 
 /// p1, p2 の中点を通り、もう一点と反対方向に延びる線分を返します。
 /// 線分の両端は、vとworldSizeの境界上になります。
-Line.getBisector　= function(v, p1, p2, anotherSideP) {
+Line.getBisector = function(v, p1, p2, anotherSideP) {
 	var worldSize = Voronoi.WorldSize;
 	return new Line(v, anotherPoint());
 

@@ -22,7 +22,7 @@ function uniqueList(arg, fIsSame, fMap) {
 	for (var i = 0, iMax = arg.length; i < iMax; i ++) {
 		var target = arg[i];
 		var hasSame = false;
-		for (var j = i + 1, jMax　= arg.length; j < jMax; j ++) {
+		for (var j = i + 1, jMax = arg.length; j < jMax; j ++) {
 			if (fIsSame(target, arg[j])) {
 				hasSame = true;
 				break;
