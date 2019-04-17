@@ -2,7 +2,6 @@
   "name": "voronoi_beach_line_viewer",
   "version": "1.0.0",
   "description": "VoronoiBeachLineViewer",
-  "main": "BeachLine.js",
   "scripts": {
     "build": "tsc src/index.ts --outDir temp/ && browserify temp/index.js --outfile dest/index.js",
     "test": "mocha -r ts-node/register \"test/**/*.ts\""

@@ -20,10 +20,10 @@ declare var window: Window;
 
 
 export default class InitController {
-	view :View;
-	setting :VoronoiSetting;
-	seed :Point[] = window.initialSeeds || [];
-	beachLine :BeachLine;
+	private view :View;
+	private setting :VoronoiSetting;
+	private seed :Point[] = window.initialSeeds || [];
+	private beachLine :BeachLine;
 
 	constructor(view :View) {
 		this.view = view;

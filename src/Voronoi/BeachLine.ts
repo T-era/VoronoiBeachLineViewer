@@ -9,14 +9,14 @@ type Logger = (msg :string)=>void;
 type NodeSort = (a :Node, b:Node)=>number;
 
 export default class BeachLine {
-	voronoiPoints :Point[];
-	sightPointIndex :number;
-	depth :number;
-	seedCount :number;
-	seedSortedByY :MPoint[];
-	logger :Logger;
-	topNode :Node|null;
-	lastEvent :Event|null;
+	private voronoiPoints :Point[];
+	private sightPointIndex :number;
+	private depth :number;
+	private seedCount :number;
+	private seedSortedByY :MPoint[];
+	private logger :Logger;
+	private topNode :Node|null;
+	private lastEvent :Event|null;
 
 	constructor(arg :Point[], logger :Logger) {
 		this.voronoiPoints = [];

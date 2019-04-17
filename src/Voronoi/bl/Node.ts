@@ -13,7 +13,7 @@ export default class Node {
 	next :Node|null;
 	circle :Circle|null;
 	circleEventDepth :number|null;
-	lr :Flr;
+	private lr :Flr;
 
 	constructor(motherPoint :MPoint) {
 		this.mPoint = motherPoint;

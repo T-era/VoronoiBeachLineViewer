@@ -20,7 +20,7 @@ export interface CrossPoints {
 type F = (x :number)=>number;
 
 export class Curv {
-	focus :Point
+	private focus :Point
 
 	constructor(focus :Point) {
 		this.focus = focus;

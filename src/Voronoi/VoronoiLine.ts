@@ -3,14 +3,14 @@ import MPoint from './MPoint';
 import Line from '../Line';
 
 export default class VoronoiLine {
-	mPoint1 :MPoint;
-	mPoint2 :MPoint;
-	another :MPoint;
-	vPoint :Point;
-	str :string;
+	private mPoint1 :MPoint;
+	private mPoint2 :MPoint;
+	private another :MPoint;
+	private vPoint :Point;
+	private str :string;
 
-	static Unclosed : { [key :string] :VoronoiLine } = {};
-	static Closed :Line[] = [];
+	private static Unclosed : { [key :string] :VoronoiLine } = {};
+	private static Closed :Line[] = [];
 
 	constructor(mPoint1 :MPoint, mPoint2 :MPoint, vPoint :Point, another :MPoint) {
 		this.mPoint1 = mPoint1;

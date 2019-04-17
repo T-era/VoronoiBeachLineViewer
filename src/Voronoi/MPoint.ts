@@ -11,7 +11,7 @@ class Kvw {
 export default class MPoint implements Point {
 	x :number;
 	y :number;
-	str :string;
+	private str :string;
 
 	constructor(p :Point) {
 		this.x = p.x;
@@ -19,12 +19,12 @@ export default class MPoint implements Point {
 
 		/// toString用(キーに使うため)
 		this.str = this.x + "," + this.y;
-	};
+	}
 
 	/// (連想配列のキーに使うため)
 	toString() :string {
 		return this.str;
-	};
+	}
 
 	draw(context :CanvasRenderingContext2D, setting :VoronoiSetting) :void {
 		if (! setting.isGiraffeMode) {
@@ -33,5 +33,5 @@ export default class MPoint implements Point {
 			context.arc(this.x, this.y, 2, 0, 7);
 			context.stroke();
 		}
-	};
+	}
 }

@@ -4,8 +4,8 @@ import jr from './JunkRack'
 type Comp = -1|0|1;
 
 export default class Line {
-	p1 :Point;
-	p2 :Point;
+	private p1 :Point;
+	private p2 :Point;
 
 	constructor(p1 :Point, p2 :Point) {
 		this.p1 = p1;
