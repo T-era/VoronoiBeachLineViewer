@@ -33,17 +33,16 @@ export default class Node {
 	}
 
 	willClose() :boolean {
-		if (jr.d_same(this.circleEventDepth, this.mPoint.y)) {
+		if (this.circleEventDepth === undefined) {
+			return false;
+		} else if (jr.d_same(this.circleEventDepth, this.mPoint.y)) {
 			// 交点直下でSightイベントが発生する場合への対処。
 			return false;
 		} else if (this.prev && this.next) {
-			console.log("HERE!!");
-			var c1 = CCurve.curveCrosses(this.circleEventDepth, this.mPoint, this.prev.mPoint);
-			var c2 = CCurve.curveCrosses(this.circleEventDepth, this.mPoint, this.next.mPoint);
-			console.log(c1);
-			console.log(c2);
-			var pl = this.prev.lr(c1);
-			var pr = this.     lr(c2);
+			let c1 = CCurve.curveCrosses(this.circleEventDepth, this.mPoint, this.prev.mPoint);
+			let c2 = CCurve.curveCrosses(this.circleEventDepth, this.mPoint, this.next.mPoint);
+			let pl = this.prev.lr(c1);
+			let pr = this.     lr(c2);
 
 			return jr.d_same(pl.y, pr.y)
 				&& jr.d_same(pl.x, pr.x);
@@ -54,18 +53,18 @@ export default class Node {
 
 	containsRangeX(x :number, depth :number) :boolean {
 		if (this.prev && this.next) {
-			var p1 = this.prev.lr(CCurve.curveCrosses(depth, this.mPoint, this.prev.mPoint));
-			var p2 = this     .lr(CCurve.curveCrosses(depth, this.mPoint, this.next.mPoint));
+			let p1 = this.prev.lr(CCurve.curveCrosses(depth, this.mPoint, this.prev.mPoint));
+			let p2 = this     .lr(CCurve.curveCrosses(depth, this.mPoint, this.next.mPoint));
 
 			return p1 && p2
 				&& p1.x <= x
 				&& x < p2.x;
 		} else if (this.next) {
-			var p2 = this     .lr(CCurve.curveCrosses(depth, this.mPoint, this.next.mPoint));
+			let p2 = this     .lr(CCurve.curveCrosses(depth, this.mPoint, this.next.mPoint));
 			return p2
 				&& x < p2.x;
 		} else if (this.prev) {
-			var p1 = this.prev.lr(CCurve.curveCrosses(depth, this.mPoint, this.prev.mPoint));
+			let p1 = this.prev.lr(CCurve.curveCrosses(depth, this.mPoint, this.prev.mPoint));
 			return p1
 				&& p1.x <= x;
 		} else {
@@ -82,7 +81,7 @@ export default class Node {
 	addChild(newPoint :MPoint) :Node {
 
 		// 交点が一つしかないケース/交点が2つあるケース。
-		var twoCross = !(newPoint.y == this.mPoint.y);
+		var twoCross = (newPoint.y !== this.mPoint.y);
 		var oldNext = this.next;
 		var firstHalf = this;
 		var oldLR = this.lr;
@@ -139,21 +138,20 @@ export default class Node {
 			}
 		}
 	};
-	forEach(f :(a:Node)=>void) :void {
-		for (var temp :Node = this; temp; temp = temp.next) {
+	forEachNode(f :(a:Node)=>void) :void {
+		for (let temp :Node = this; temp; temp = temp.next) {
 			f(temp);
 		}
 	};
 
 	draw(context, depth :number, size :Size) :void {
-
-		var c1 = this.prev ? CCurve.curveCrosses(depth, this.prev.mPoint, this.mPoint) : null;
-		var c2 = this.next ? CCurve.curveCrosses(depth, this.mPoint, this.next.mPoint) : null;
-		var p1 = c1 ? this.prev.lr(c1) : { x: 0, y: 0 };
-		var p2 = c2 ? this     .lr(c2) : { x: size.width, y: 0 };
+		let c1 = this.prev ? CCurve.curveCrosses(depth, this.prev.mPoint, this.mPoint) : null;
+		let c2 = this.next ? CCurve.curveCrosses(depth, this.mPoint, this.next.mPoint) : null;
+		let p1 = c1 ? this.prev.lr(c1) : { x: 0, y: 0 };
+		let p2 = c2 ? this     .lr(c2) : { x: size.width, y: 0 };
 
 		context.strokeStyle = "#aaa";
-		var curve = CCurve.create(depth - this.mPoint.y, this.mPoint);
-		curve.draw(context, Math.max(p1.x, 0), Math.min(p2.x, size.width));
+		let curve = CCurve.create(this.mPoint);
+		curve.draw(context, depth, Math.max(p1.x, 0), Math.min(p2.x, size.width));
 	}
 }

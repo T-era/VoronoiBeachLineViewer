@@ -2,23 +2,13 @@ import jr from './JunkRack';
 import { Point } from './types';
 
 export default {
-	create(depthBy :number, focus :Point) :Curv {
-		if (jr.d_same(depthBy, 0)) {
-			let vertical = new Vertical();
-			vertical.x = focus.x;
-			return vertical;
-		} else {
-			let qCurve = new QCurve();
-			qCurve.x = focus.x,
-			qCurve.y = focus.y + depthBy / 2;
-			qCurve.a = - 1 / 2 / depthBy;
-			return qCurve;
-		}
+	create(focus :Point) :Curv {
+		return new Curv(focus);
 	},
 	curveCrosses(depth :number, p1 :Point|null, p2 :Point|null) {
 		if (! p1|| ! p2) return null;
-		return this.create(depth - p1.y, p1)
-			.cross(this.create(depth - p2.y, p2));
+		return this.create(p1)
+			.cross(this.create(p2), depth);
 	}
 }
 
@@ -27,104 +17,87 @@ export interface CrossPoints {
 	right :Point;
 	left :Point;
 }
+type F = (x :number)=>number;
 
-export interface Curv {
-	x :number;
-	y :number;
-	a :number;
-	f :(x :number)=>number;
-	cross(arg :Curv) :CrossPoints;
-	draw(context, fromX :number, toX :number) :void;
-}
+export class Curv {
+	focus :Point
 
-class QCurve implements Curv {
-	x :number;
-	y :number;
-	a :number;
-
-	f(x :number) :number {
-		return this.a * (x - this.x) * (x - this.x) + this.y;
+	constructor(focus :Point) {
+		this.focus = focus;
 	}
-	cross(arg :Curv) :CrossPoints {
-		if (arg instanceof Vertical) {
-			return arg.cross(this);
-		} else if (this.a === arg.a) { // d_sameは使わない。a 値は、depthByの増大とともに0に漸近するので、d_sameが偽から真に変化してしまう。
-			// 交点が2つ存在しないケース
-			if (this.x === arg.x) {
-				// 交点なし。
+	getF(y2 :number) :F {
+		let x1 = this.focus.x;
+		let y1 = this.focus.y;
+		if (y1 === y2) {
+			return (x:number) => { return undefined };
+		} else {
+			let y1d = y1 ** 2;
+			let y2d = y2 ** 2;
+			let dy = y1 - y2;
+			return (x :number) => {
+				return ((x1 - x) ** 2 + y1d - y2d) / 2 / dy;
+			}
+		}
+	}
+	cross(arg :Curv, dy :number) :CrossPoints {
+		if (this.focus.y === arg.focus.y) {
+			// 真横
+			if (this.focus.y === dy) {
+				// 交点なし
 				return null;
 			} else {
 				// 交点一つ
-				let x = (this.x + arg.x) / 2.0;
-				let y = this.f(x);
-				let point = { x: x, y: y };
-				return { right: point, left: point };
+				let f = this.getF(dy);
+				let x  = (this.focus.x + arg.focus.x) / 2;
+				return single(f, x)
 			}
+		} else if (this.focus.y === dy) {
+			return single(arg.getF(dy), this.focus.x);
+		} else if (arg.focus.y === dy){
+			return single(this.getF(dy), arg.focus.x);
 		} else {
-			// y = a1 * (x - xx1) ^2 + yy1
-			// 	 = a1 * x^2 - 2*a1*xx1*x + a1*xx1^2 + yy1
-			// y = a2 * (x - xx2) ^2 + yy2
-			//   = a2 * x^2 - 2*a2*xx2*x + a2*xx2^2 + yy2
-			//
-			// 0 = (a1-a2)x^2 - (2*a1*xx1 - 2*a2*xx2) + a1*xx1^2 - a2*xx2^2 + yy1 - yy2
-
-			// p*x^2 + q*x + r = 0
-			// p: a1-a2
-			// q: -2(a1*xx1 - a2*xx2)
-			// r: a1*xx1^2 - a2*xx2^2 + yy1 - yy2
-
-			let p = this.a - arg.a;
-			let q = -2.0 * (this.a * this.x - arg.a * arg.x);
-			let r = this.a * this.x * this.x
-					- arg.a * arg.x * arg.x
-					+ this.y - arg.y;
-
-			let x1 = (- q + Math.sqrt(q * q - 4 * p * r)) / (2 * p);
-			let x2 = (- q - Math.sqrt(q * q - 4 * p * r)) / (2 * p);
-			let xr = Math.max(x1, x2);
-			let xl = Math.min(x1, x2);
-			let yr = this.f(xr);
-			let yl = this.f(xl);
+			let f = this.getF(dy);
+			let x1 = this.focus.x;
+			let y1 = this.focus.y;
+			let x2 = arg.focus.x;
+			let y2 = arg.focus.y;
+			let a = y2 - y1;
+			let b = -2 * (x1 * y2 - x2 * y1 - x1 * dy + x2 * dy)
+			let c = (x1 ** 2 + y1 ** 2 - dy ** 2) * (y2 - dy)
+				- (x2 ** 2 + y2 ** 2 - dy ** 2) * (y1 - dy);
+			let xa = (- b - Math.sqrt(b ** 2 - 4 * a * c)) / 2 / a;
+			let xb = (- b + Math.sqrt(b ** 2 - 4 * a * c)) / 2 / a;
+			let xl = Math.min(xa, xb);
+			let xr = Math.max(xa, xb);
 			return {
-				right: { x: xr, y: yr },
-				left: { x: xl, y: yl }
+				left: { x: xl, y: f(xl) },
+				right: { x:xr, y: f(xr) }
 			};
+		}
+		function single(f :F, x :number) {
+			let y = f(x);
+			return {
+				left: { x: x, y: y },
+				right: { x: x, y: y }
+			};
+
 		}
 	}
 
-	draw(context, fromX :number, toX :number) :void {
+	draw(context, dy :number, fromX :number, toX :number) {
+		if (this.focus.y === dy) {
+			return;
+		}
+		let f = this.getF(dy);
 		let px = fromX;
-		let py = this.f(px);
+		let py = f(px);
 
 		context.beginPath();
 		context.moveTo(px, py);
 		for (let x = fromX; x < toX; x += 0.1) {
-			let y = this.f(x);
+			let y = f(x);
 			context.lineTo(x, y);
-			px = x;
-			py = y;
 		}
 		context.stroke();
 	}
-}
-class Vertical implements Curv {
-	x :number;
-	y = undefined;
-	a = undefined;
-
-	f(x:number) :number { return this.y; }
-	cross(arg :Curv) :CrossPoints {
-		if (arg instanceof Vertical) {
-			// 垂直線同士の交点はない。(もっとも浅い2点のyが一致した場合にここに来る)
-			return null;
-		} else {
-			let ay = arg.f(this.x);
-			let point = { x: this.x, y: ay };
-			return {
-				right: point,
-				left: point
-			};
-		}
-	}
-	draw(context) {}
 }

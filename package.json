@@ -4,8 +4,8 @@
   "description": "VoronoiBeachLineViewer",
   "main": "BeachLine.js",
   "scripts": {
-    "test": "node dest/test.js",
-    "build": "tsc src/index.ts --outDir temp/ && browserify temp/index.js --outfile dest/index.js"
+    "build": "tsc src/index.ts --outDir temp/ && browserify temp/index.js --outfile dest/index.js",
+    "test": "mocha -r ts-node/register \"test/**/*.ts\""
   },
   "repository": {
     "type": "git",
@@ -19,7 +19,11 @@
   "homepage": "https://github.com/t-era/VoronoiBeachLineViewer#readme",
   "dependencies": {
     "@types/jquery": "^3.3.29",
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^11.13.4",
     "browserify": "^16.2.3",
+    "mocha": "^6.1.2",
+    "ts-node": "^8.0.3",
     "typescript": "^3.4.2"
   }
 }

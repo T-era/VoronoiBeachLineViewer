@@ -122,7 +122,7 @@ export default class BeachLine {
 
 		if (this.topNode) {
 			var d = this.depth;
-			this.topNode.forEach(function(node) {
+			this.topNode.forEachNode(function(node) {
 				node.draw(context, d, size);
 			});
 		}
@@ -168,7 +168,7 @@ export default class BeachLine {
 	toList(fSort :NodeSort) :Node[] {
 		var list = [];
 		if (this.topNode) {
-			this.topNode.forEach(function(n) {
+			this.topNode.forEachNode(function(n) {
 				list.push(n);
 			});
 		}

@@ -33,12 +33,11 @@ export default {
 			eventBorder: newPoint.y,
 			action: function(topNode) {
 				if (topNode) {
-					var ownerNode = topNode.seek(function(node) {
+					let ownerNode = topNode.seek(function(node) {
 						return node.containsRangeX(newPoint.x, newPoint.y);
 					});
-
 					ownerNode = ownerNode == null ? last(topNode) : ownerNode;
-					var node = ownerNode.addChild(newPoint);
+					let node = ownerNode.addChild(newPoint);
 					return node.topNode();
 				} else {
 					return new Node(newPoint);
