@@ -22,7 +22,7 @@ export default class Node {
 	}
 	computeCircle() :void {
 		if (this.prev && this.next) {
-			var circle = Circle.create(this.mPoint, this.prev.mPoint, this.next.mPoint);
+			let circle = Circle.create(this.mPoint, this.prev.mPoint, this.next.mPoint);
 			this.circle = circle;
 			if (circle) {
 				this.circleEventDepth = circle.center.y + circle.r;
@@ -81,14 +81,14 @@ export default class Node {
 	addChild(newPoint :MPoint) :Node {
 
 		// 交点が一つしかないケース/交点が2つあるケース。
-		var twoCross = (newPoint.y !== this.mPoint.y);
-		var oldNext = this.next;
-		var firstHalf = this;
-		var oldLR = this.lr;
-		var newNode = new Node(newPoint);
+		let twoCross = (newPoint.y !== this.mPoint.y);
+		let oldNext = this.next;
+		let firstHalf = this;
+		let oldLR = this.lr;
+		let newNode = new Node(newPoint);
 		firstHalf.setNext(newNode, function(c) { return c == null ? null : c.left; });
 		if (twoCross) {
-			var secondHalf = new Node(this.mPoint);
+			let secondHalf = new Node(this.mPoint);
 			newNode.setNext(secondHalf, function(c) { return c.right; });
 			secondHalf.setNext(oldNext, oldLR);
 			secondHalf.computeCircle();
@@ -103,7 +103,7 @@ export default class Node {
 	remove() :Node {
 		// 要素を削除(LinkedListを切り詰める)
 		// LRを引き継ぐ。 深い方のLRを設定。
-		var lr = this.prev.mPoint.y > this.next.mPoint.y
+		let lr = this.prev.mPoint.y > this.next.mPoint.y
 				? this.prev.lr
 				: this.     lr;
 
@@ -118,7 +118,7 @@ export default class Node {
 
 	// コレクション操作
 	seek(f :NodeSeek) :Node|null {
-		for (var temp :Node = this; temp; temp = temp.next) {
+		for (let temp :Node = this; temp; temp = temp.next) {
 			if (f(temp)) {
 				return temp;
 			}
@@ -127,12 +127,12 @@ export default class Node {
 	}
 
 	addToList(list :Node[]) :void {
-		for (var temp :Node = this; temp; temp = temp.next) {
+		for (let temp :Node = this; temp; temp = temp.next) {
 			list.push(temp);
 		}
 	};
 	topNode() :Node {
-		for (var temp :Node = this; ; temp = temp.prev) {
+		for (let temp :Node = this; ; temp = temp.prev) {
 			if (! temp.prev) {
 				return temp;
 			}

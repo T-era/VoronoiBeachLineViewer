@@ -36,9 +36,9 @@ export default class MPoint implements Point {
 		addImpl.call(this, buddy2, buddy1);
 
 		function addImpl(mp1, mp2) {
-			var ln = this.lonleyNeighbor[mp1];
+			let ln = this.lonleyNeighbor[mp1];
 			if (ln) {
-				var newVPoint = ln.v;
+				let newVPoint = ln.v;
 				this.voronoiLines.push(new Line(vPoint, newVPoint));
 				delete this.lonleyNeighbor[mp1];
 			} else {
@@ -50,11 +50,11 @@ export default class MPoint implements Point {
 	/// MPointを囲むボロノイ領域が閉じていない場合、画面縁辺までの線分を追加して領域を(視覚的に)閉じます。
 	/// このメソッドを処理途中で呼ぶと、正しくボロノイ図を計算できません。
 	finalize(size :Size) :void {
-		for (var str in this.lonleyNeighbor) {
-			var mp = this.lonleyNeighbor[str].k;
-			var vp = this.lonleyNeighbor[str].v;
-			var another = this.lonleyNeighbor[str].w;
-			var l = Line.getBisector(vp, this, mp, another, size);
+		for (let str in this.lonleyNeighbor) {
+			let mp = this.lonleyNeighbor[str].k;
+			let vp = this.lonleyNeighbor[str].v;
+			let another = this.lonleyNeighbor[str].w;
+			let l = Line.getBisector(vp, this, mp, another, size);
 			this.voronoiLines.push(l);
 		}
 	}

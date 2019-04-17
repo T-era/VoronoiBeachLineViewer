@@ -8,17 +8,17 @@ import Events from './Voronoi/bl/Events';
 import BeachLine from './Voronoi/BeachLine';
 
 $(function() {
-	var cnv = $("#canvas");
-	var canvas = cnv[0] as HTMLCanvasElement;
+	let cnv = $("#canvas");
+	let canvas = cnv[0] as HTMLCanvasElement;
 	// 表示上のサイズに合わせて、描画領域のサイズを設定。(円が丸っこく見えるように)
 	canvas.height = canvas.width * canvas.offsetHeight / canvas.offsetWidth;
 
-	var isInitMode = false;
-	var seed = [];
-	var beachLine :BeachLine;
+	let isInitMode = false;
+	let seed = [];
+	let beachLine :BeachLine;
 	let setting = { isGiraffeMode: false };
 
-	var context = canvas.getContext("2d");
+	let context = canvas.getContext("2d");
 	function context_clearAll() {
 		context.clearRect(0,0,canvas.width, canvas.height);
 	};
@@ -28,8 +28,8 @@ $(function() {
 	function setCommonEvents() {
 		cnv.mousemove(
 			function(e) {
-				var l = oToL(e, e.target);
-				var str = jr.showPoint(l);
+				let l = oToL(e, e.target);
+				let str = jr.showPoint(l);
 				$("#showPosition").val(str);
 			});
 		$("#eventButton").click(function() {
@@ -43,7 +43,7 @@ $(function() {
 		$("#runButton").click(runAll);
 		$("#runButton1").click(skipAll);
 		$("#putRandom").click(function() {
-			for (var i = 0; i < 10; i ++) {
+			for (let i = 0; i < 10; i ++) {
 				seed.push({
 					x: Math.random() * canvas.width,
 					y: Math.random() * canvas.height
@@ -60,8 +60,8 @@ $(function() {
 		$("#giraffeMode").click(setGiraffeMode);
 		cnv.click(function(arg) {
 			if (isInitMode) {
-				var target = arg.target;
-				var l = oToL(arg, target);
+				let target = arg.target;
+				let l = oToL(arg, target);
 				seed.push(l);
 				drawSeed();
 			}
@@ -76,7 +76,7 @@ $(function() {
 			});
 		}
 		function runAll() {
-			var done = beachLine.stepNextEvent(canvas);
+			let done = beachLine.stepNextEvent(canvas);
 			beachLine.draw(context, canvas, setting);
 
 			if (!done) {
@@ -89,7 +89,7 @@ $(function() {
 			beachLine.draw(context, canvas, setting);
 		}
 		function setGiraffeMode(event) {
-			var flg = event.target.checked;
+			let flg = event.target.checked;
 			if (!flg) alert("マジで...!?");
 			cnv.css({background: flg ? "#a80" : "#fff" });
 			setting.isGiraffeMode = flg;

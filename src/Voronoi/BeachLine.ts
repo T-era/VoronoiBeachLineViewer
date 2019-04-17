@@ -21,7 +21,7 @@ export default class BeachLine {
 		this.voronoiPoints = [];
 		this.sightPointIndex = 0;
 		this.depth = 0;
-		var seed = jr.uniqueList(arg, function(p1, p2) {
+		let seed = jr.uniqueList(arg, function(p1, p2) {
 			return jr.d_same(p1.x, p2.x, 3)
 				&& jr.d_same(p1.y, p2.y, 3);
 		}).map(function(p) { return new MPoint(p); });
@@ -55,15 +55,15 @@ export default class BeachLine {
 	};
 
 	stepNextEvent(size :Size) :boolean {
-		var event = null;
-		var done = false;
+		let event = null;
+		let done = false;
 
-		var nextCircle = this.getNextCircleEvent();
+		let nextCircle = this.getNextCircleEvent();
 
 		if (nextCircle) { // サークルイベントが起きないなら、サイトイベントを起こす。
 			event = Events.toCircleEvent(nextCircle, this);
 		} else {
-			var nextPoint = this.getNextSight();
+			let nextPoint = this.getNextSight();
 			if (nextPoint) {
 				event = Events.toSightEvent(nextPoint, this);
 				this.sightPointIndex ++;
@@ -71,7 +71,7 @@ export default class BeachLine {
 				event = {
 					eventBorder: size.height * 2,
 					action: function(topNode) {
-						topNode.forEach(function(node) {
+						topNode.forEachNode(function(node) {
 							node.mPoint.finalize(size);
 						});
 						return topNode;
@@ -91,12 +91,12 @@ export default class BeachLine {
 	};
 
 	stepPixel(size :Size) :void {
-		var nextDepth = this.depth + 1;
-		var nextSight = this.getNextSight();
-		var sightEventOccur = nextSight
+		let nextDepth = this.depth + 1;
+		let nextSight = this.getNextSight();
+		let sightEventOccur = nextSight
 				&& nextDepth > nextSight.y;
-		var nextCircle = this.getNextCircleEvent();
-		var circleEventOccur = nextCircle
+		let nextCircle = this.getNextCircleEvent();
+		let circleEventOccur = nextCircle
 				&& nextDepth > nextCircle.circleEventDepth;
 		if (sightEventOccur
 				|| circleEventOccur) {
@@ -121,13 +121,13 @@ export default class BeachLine {
 		context.stroke();
 
 		if (this.topNode) {
-			var d = this.depth;
+			let d = this.depth;
 			this.topNode.forEachNode(function(node) {
 				node.draw(context, d, size);
 			});
 		}
-		for (var i = 0, max = this.seedCount; i < max; i ++) {
-			var p = this.getSeedAt(i);
+		for (let i = 0, max = this.seedCount; i < max; i ++) {
+			let p = this.getSeedAt(i);
 			p.draw(context, setting);
 		}
 		if (!setting.isGiraffeMode) {
@@ -141,9 +141,9 @@ export default class BeachLine {
 	};
 
 	getNextCircleEvent() :Node|null {
-		var nextSight = this.getNextSight();
+		let nextSight = this.getNextSight();
 		// Seek circle event
-		var circleEventQueue = this.toList(function(o1, o2) {
+		let circleEventQueue = this.toList(function(o1, o2) {
 			if (o1.circleEventDepth
 				&& o2.circleEventDepth)
 				return o1.circleEventDepth - o2.circleEventDepth;
@@ -151,8 +151,8 @@ export default class BeachLine {
 			else if (o2.circleEventDepth) return 1;
 			else return 0;
 		});
-		for (var i = 0, max = circleEventQueue.length; i < max; i ++) {
-			var arc = circleEventQueue[i];
+		for (let i = 0, max = circleEventQueue.length; i < max; i ++) {
+			let arc = circleEventQueue[i];
 			// 最後のポイントのサイトイベント後は、すべてのサークルイベントを処理する。
 			// 次のサイトイベントの手前に、サークルイベントがあるばあい、今回処理するのはそのサークルイベント
 			if (nextSight != null
@@ -166,7 +166,7 @@ export default class BeachLine {
 	};
 
 	toList(fSort :NodeSort) :Node[] {
-		var list = [];
+		let list = [];
 		if (this.topNode) {
 			this.topNode.forEachNode(function(n) {
 				list.push(n);

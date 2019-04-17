@@ -12,7 +12,7 @@ export interface Event {
 }
 export default {
 	toCircleEvent(removing :Node, beachLine :BeachLine) :Event {
-		var circle = removing.circle;
+		let circle = removing.circle;
 		return {
 			eventBorder: circle.center.y + circle.r,
 			action: function(topNode) {

@@ -18,11 +18,11 @@ export default {
 	},
 	/// 受け取ったリストから重複する要素を除外し、新しいリストにして返します。
 	uniqueList<S>(arg :S[], fIsSame :(a1:S,a2:S)=>boolean) {
-		var temp = [];
-		for (var i = 0, iMax = arg.length; i < iMax; i ++) {
-			var target = arg[i];
-			var hasSame = false;
-			for (var j = i + 1, jMax = arg.length; j < jMax; j ++) {
+		let temp = [];
+		for (let i = 0, iMax = arg.length; i < iMax; i ++) {
+			let target = arg[i];
+			let hasSame = false;
+			for (let j = i + 1, jMax = arg.length; j < jMax; j ++) {
 				if (fIsSame(target, arg[j])) {
 					hasSame = true;
 					break;
