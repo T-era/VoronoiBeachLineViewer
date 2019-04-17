@@ -3,6 +3,7 @@ import jr from '../JunkRack';
 import MPoint from './MPoint';
 import Events, { Event } from './bl/Events';
 import Node from './bl/Node';
+import VoronoiLine from './VoronoiLine';
 
 type Logger = (msg :string)=>void;
 type NodeSort = (a :Node, b:Node)=>number;
@@ -34,14 +35,15 @@ export default class BeachLine {
 				return a.y - b.y;
 			}
 		});
+		VoronoiLine.initialize();
 
 		this.logger = logger;
 	}
 	addVPoint(vPoint :Point, m1 :MPoint, m2 :MPoint, m3 :MPoint) :void {
 		this.voronoiPoints.push(vPoint);
-		m1.addVPoint(vPoint,m2,m3);
-		m2.addVPoint(vPoint,m1,m3);
-		m3.addVPoint(vPoint,m1,m2);
+		VoronoiLine.add(m1, m2, vPoint, m3);
+		VoronoiLine.add(m1, m3, vPoint, m2);
+		VoronoiLine.add(m2, m3, vPoint, m1);
 	};
 	getSeedAt(i :number) :MPoint|null {
 		if (this.seedSortedByY.length > i) {
@@ -71,9 +73,6 @@ export default class BeachLine {
 				event = {
 					eventBorder: size.height * 2,
 					action: function(topNode) {
-						topNode.forEachNode(function(node) {
-							node.mPoint.finalize(size);
-						});
 						return topNode;
 					},
 					draw: function(context) {}
@@ -130,6 +129,7 @@ export default class BeachLine {
 			let p = this.getSeedAt(i);
 			p.draw(context, setting);
 		}
+		VoronoiLine.draw(context, size, setting);
 		if (!setting.isGiraffeMode) {
 			context.strokeStyle = "#f00";
 			this.voronoiPoints.forEach(function(v) {
