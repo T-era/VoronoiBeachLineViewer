@@ -15,7 +15,10 @@ div.border {
 canvas {
 	float: left;
 	width: 80%;
-	height: 100%;
+	height: 80%;
+}
+textarea {
+	width: 100%;
 }
 input {
 	display: block;
@@ -23,79 +26,37 @@ input {
 </style>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script type="text/javascript">
-Voronoi = {};
-$(function() {
-	var canvas = $("#canvas")[0];
-	Voronoi.WorldSize = canvas;
-	// 表示上のサイズに合わせて、描画領域のサイズを設定。(円が丸っこく見えるように)
-	canvas.height = canvas.width * canvas.offsetHeight / canvas.offsetWidth;
-	var context = canvas.getContext("2d");
-
-	var seed = [
-//		{x:200,y:210},{x:430,y:211},{x:300,y:230},{x:301,y:281}
-{x:790.7278306309031,y:202.64509588996643},
+var initialSeeds = [{x:790.7278306309031,y:202.64509588996643},
 {x:695.4916914489797,y:173.73006395895248},
 {x:732.5084914267239,y:284.31160630977445},// たぶん、交点の真上。
 // TODO たぶん、交点の真上でサイトイベントが起きたら、曲線の追加を行いつつサークルイベントを起こす必要がある
-	];
-
-	var bl = new Voronoi.BeachLine(seed
-		, function(){});
-	$("#eventButton")
-		.bind("click", function() {
-			bl.stepNextEvent();
-			bl.draw(context);
-		});
-	$("#pixelButton")
-		.bind("click", function() {
-			bl.stepPixel();
-console.log(bl.depth);
-			bl.draw(context);
-		});
-	bl.draw(context);
-
-	function randomSeed(count) {
-		var array = [];
-		for (var i = 0; i < count; i ++) {
-			array.push({
-				x: Math.random() * canvas.width,
-				y: Math.random() * canvas.height
-			});
-		}
-		return array;
-	}
-	function round(center, r, l) {
-		var ret = [];
-		for (var i = 0, max = l.length; i < max; i ++) {
-			var org = l[i];
-			var dx = org.x - center.x;
-			var dy = org.y - center.y;
-			ret.push({
-				x: (  Math.cos(r) * dx + Math.sin(r) * dy) + center.x,
-				y: (- Math.sin(r) * dx + Math.cos(r) * dy) + center.y
-			})
-		}
-		return ret;
-	}
-});
+];
 </script>
-<script type="text/javascript" src="JunkRack.js"></script>
-<script type="text/javascript" src="Circle.js"></script>
-<script type="text/javascript" src="Curv.js"></script>
-<script type="text/javascript" src="BeachLine.js"></script>
-<script type="text/javascript" src="BeachLineNode.js"></script>
-<script type="text/javascript" src="Event.js"></script>
-<script type="text/javascript" src="MotherPoint.js"></script>
-<script type="text/javascript" src="Line.js"></script>
+<script type="text/javascript" src="dest/index.js"></script>
 	</head>
 	<body>
 		<canvas id="canvas" width="1000">HTML5 Canvas required!</canvas>
 		<div style="float: left;">
-			<input type="text" value="" id="showPosition" />
+			<input type="text" value="" id="showPosition" readonly />
 			<div class="border" id="BeachLineControl">
 				<input type="button" value="Next EVENT" id="eventButton" />
 				<input type="button" value="Next PIXEL" id="pixelButton" />
+				<input type="button" value="Run Through" id="runButton" />
+				<input type="button" value="(no animation)" id="runButton1" />
+				<hr/>
+				<input type="button" value="母点の配置を変える" id="backToInit" />
+				<hr/>
+				<input type="checkbox" id="giraffeMode" style="display: inline;" />きりんがすき。
+			</div>
+			<div class="border" id="Initializer">
+				<input type="button" value="ランダムに配置する" id="putRandom" />
+				<input type="button" value="まっさらに戻す" id="clearPoints" />
+				<input type="button" value="この配置でGO" id="done" />
+			</div>
+			<div class="border" id="Debug">
+				<input type="button" value="母点をログ" id="exportPoints" />
 			</div>
 		</div>
+		<textarea id="logView" readonly ></textarea>
 	</body>
 </html>

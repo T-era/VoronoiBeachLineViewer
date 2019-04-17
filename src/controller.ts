@@ -15,11 +15,14 @@ interface View {
 	drawSeed(seed :Point[]) :void;
 	clear() :void;
 }
+interface Window { initialSeeds :Point[]|null; }
+declare var window: Window;
+
 
 export default class InitController {
 	view :View;
 	setting :VoronoiSetting;
-	seed :Point[] = [];
+	seed :Point[] = window.initialSeeds || [];
 	beachLine :BeachLine;
 
 	constructor(view :View) {
