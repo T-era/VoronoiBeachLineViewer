@@ -7,6 +7,7 @@ import MPoint from './Voronoi/MPoint';
 import Node from './Voronoi/bl/Node';
 import Events from './Voronoi/bl/Events';
 import BeachLine from './Voronoi/BeachLine';
+import InitController from './controller';
 
 interface EventPointer {
 	clientX :number;
@@ -19,11 +20,17 @@ $(function() {
 	canvas.height = canvas.width * canvas.offsetHeight / canvas.offsetWidth;
 
 	let isInitMode = false;
-	let seed :Point[] = [];
-	let beachLine :BeachLine;
-	let setting = { isGiraffeMode: false };
 
 	let context :CanvasRenderingContext2D = canvas.getContext("2d");
+
+	let view = {
+		logAppend,
+		logClear,
+		context() { return context; },
+		drawSeed,
+		clear: context_clearAll
+	};
+	let controller = new InitController(view);
 	function context_clearAll() :void {
 		context.clearRect(0,0,canvas.width, canvas.height);
 	};
@@ -37,27 +44,18 @@ $(function() {
 			$("#showPosition").val(str);
 		});
 		$("#eventButton").click(() => {
-			beachLine.stepNextEvent(canvas);
-			beachLine.draw(context, canvas, setting);
+			controller.stepEvent(canvas);
 		});
 		$("#pixelButton").click(() => {
-			beachLine.stepPixel(canvas);
-			beachLine.draw(context, canvas, setting);
+			controller.stepPixel(canvas);
 		});
 		$("#runButton").click(runAll);
 		$("#runButton1").click(skipAll);
 		$("#putRandom").click(() => {
-			for (let i = 0; i < 10; i ++) {
-				seed.push({
-					x: Math.random() * canvas.width,
-					y: Math.random() * canvas.height
-				});
-			}
-			drawSeed();
+			controller.addRandomSeed(10, canvas);
 		});
 		$("#clearPoints").click(() => {
-			seed.length = 0;
-			context_clearAll();
+			controller.clearSeed();
 		});
 		$("#backToInit").click(initMode);
 		$("#done").click(stepMode);
@@ -66,38 +64,30 @@ $(function() {
 			if (isInitMode) {
 				let target = arg.target;
 				let l = oToL(arg, target as HTMLCanvasElement);
-				seed.push(l);
-				drawSeed();
+				controller.addSeed(l);
 			}
 		});
-
-		function drawSeed() :void {
-			seed.forEach((p) => {
-				context.beginPath();
-				context.strokeStyle = "#000";
-				context.arc(p.x, p.y, 2, 0, 7);
-				context.stroke();
-			});
-		}
 		function runAll() :void {
-			let done = beachLine.stepNextEvent(canvas);
-			beachLine.draw(context, canvas, setting);
-
-			if (!done) {
-				setTimeout(runAll, 1);
-			}
+			controller.runAll(canvas);
 		}
 		function skipAll() :void {
-			do {
-			} while (!beachLine.stepNextEvent(canvas));
-			beachLine.draw(context, canvas, setting);
+			controller.skipAll(canvas);
 		}
 		function setGiraffeMode(event) :void {
 			let flg = event.target.checked;
 			if (!flg) alert("マジで...!?");
 			cnv.css({background: flg ? "#a80" : "#fff" });
-			setting.isGiraffeMode = flg;
+			controller.setGiraffeMode(flg);
 		}
+	}
+
+	function drawSeed(seed :Point[]) :void {
+		seed.forEach((p) => {
+			context.beginPath();
+			context.strokeStyle = "#000";
+			context.arc(p.x, p.y, 2, 0, 7);
+			context.stroke();
+		});
 	}
 
 	function initMode() :void {
@@ -106,6 +96,7 @@ $(function() {
 
 		$("#Initializer").show();
 		$("#BeachLineControl").hide();
+		controller.finishDrawing();
 	}
 
 	function stepMode() :void {
@@ -113,7 +104,7 @@ $(function() {
 		$("#Initializer").hide();
 		$("#BeachLineControl").show();
 
-		beachLine = new BeachLine(seed, logAppend);
+		controller.initDrawing();
 	}
 
 	function logAppend(str :string) :void {
@@ -132,7 +123,7 @@ $(function() {
 	}
 	/** デバッグ **/
 	$("#exportPoints").click(() => {
-		console.log(seed.map(debugShow).join(","));
+		console.log(controller.debugSeed(debugShow));
 	});
 	function debugShow(p :Point) :string {
 		return "{x:" + p.x + ",y:" + p.y + "}"
