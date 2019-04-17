@@ -46,7 +46,7 @@ export default class Circle {
 		}
 	}
 
-	draw(context) {
+	draw(context :CanvasRenderingContext2D) :void {
 		context.beginPath();
 		context.strokeStyle = "#f88";
 		context.arc(this.center.x, this.center.y, this.r, 0, 7);

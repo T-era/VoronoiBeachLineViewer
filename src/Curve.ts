@@ -84,7 +84,7 @@ export class Curv {
 		}
 	}
 
-	draw(context, dy :number, fromX :number, toX :number) {
+	draw(context :CanvasRenderingContext2D, dy :number, fromX :number, toX :number) :void {
 		if (this.focus.y === dy) {
 			return;
 		}

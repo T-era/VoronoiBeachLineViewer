@@ -108,7 +108,7 @@ export default class BeachLine {
 		}
 	};
 
-	draw(context, size :Size, setting :VoronoiSetting) :void {
+	draw(context :CanvasRenderingContext2D, size :Size, setting :VoronoiSetting) :void {
 		context.clearRect(0,0, size.width, size.height);
 
 		if (this.lastEvent)

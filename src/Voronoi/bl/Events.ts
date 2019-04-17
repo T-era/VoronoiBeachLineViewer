@@ -7,7 +7,7 @@ import BeachLine from '../BeachLine';
 export interface Event {
 	eventBorder :number;
 	action(topNode :Node|null):void;
-	draw(context) :void;
+	draw(context :CanvasRenderingContext2D) :void;
 	toString() :string;
 }
 export default {
@@ -20,7 +20,7 @@ export default {
 				beachLine.addVPoint(removing.circle.center, removing.mPoint, removing.prev.mPoint, removing.next.mPoint);
 				return removing.remove();
 			},
-			draw: function(context) {
+			draw: function(context :CanvasRenderingContext2D) :void {
 				circle.draw(context);
 			},
 			toString: function() {
@@ -47,7 +47,7 @@ export default {
 					else return node;
 				}
 			},
-			draw: function(context) {
+			draw: function(context :CanvasRenderingContext2D) :void {
 				context.beginPath();
 				context.strokeStyle = "#f00";
 				context.moveTo(newPoint.x, newPoint.y);

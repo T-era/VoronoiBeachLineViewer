@@ -12,7 +12,7 @@ export default class Line {
 		this.p2 = p2;
 	}
 
-	draw(context) {
+	draw(context :CanvasRenderingContext2D) :void {
 		context.beginPath();
 		context.moveTo(this.p1.x, this.p1.y);
 		context.lineTo(this.p2.x, this.p2.y);
