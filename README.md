@@ -17,4 +17,6 @@ See also...
 
 And open `VoronoiCanvas.html` in your browser!
 
-## 
+## Specs
+[計算式メモ](doc/specs.md)
+[実装上の留意](doc/exceptional.md)
