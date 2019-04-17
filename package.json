@@ -1,0 +1,25 @@
+{
+  "name": "voronoi_beach_line_viewer",
+  "version": "1.0.0",
+  "description": "VoronoiBeachLineViewer",
+  "main": "BeachLine.js",
+  "scripts": {
+    "test": "node dest/test.js",
+    "build": "tsc src/index.ts --outDir temp/ && browserify temp/index.js --outfile dest/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/t-era/VoronoiBeachLineViewer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/t-era/VoronoiBeachLineViewer/issues"
+  },
+  "homepage": "https://github.com/t-era/VoronoiBeachLineViewer#readme",
+  "dependencies": {
+    "@types/jquery": "^3.3.29",
+    "browserify": "^16.2.3",
+    "typescript": "^3.4.2"
+  }
+}
