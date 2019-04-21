@@ -7,6 +7,10 @@ import CCurve, { Curv, CrossPoints } from '../../Curve';
 type Flr = (cp :CrossPoints)=>Point;
 type NodeSeek = (arg :Node)=>boolean;
 
+// Node は、beachLine 上の2字曲線区間を表現するクラスです。
+// Linked-list 実装で、リストの並び順通りに曲線がつながっています。
+// Sightイベントが発生すると、曲線の追加が発生し(またその際に元の曲線が分割されます。)、
+// 両隣が直接接することでNodeが消滅すると、Circleイベントです。
 export default class Node {
 	mPoint :MPoint;
 	prev :Node|null;

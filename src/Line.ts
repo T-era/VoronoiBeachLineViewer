@@ -19,13 +19,15 @@ export default class Line {
 		context.stroke();
 	}
 	/// p1, p2 の中点を通り、もう一点と反対方向に延びる線分を返します。
-	/// 線分の両端は、vとworldSizeの境界上になります。
+	/// この関数が返すLineは、半直線です。
+	/// 終端はv(Voronoi点)で、他方の端は数学的には終端を持ちません(無限に伸びています)。実装上はworldSizeの境界上になります。
 	static getBisector(v :Point, p1 :Point, p2 :Point, anotherSideP :Point, worldSize :Size) :Line {
 		return new Line(v, anotherPoint());
 
 		function anotherPoint() :Point {
 			let c = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
 			if (jr.d_same(p1.y, p2.y)) {
+				if (! jr.d_same(p1.y, v.y) || ! jr.d_same(p2.y, v.y)) throw 'vが線上にない1'
 				let y;
 				if (c.y > anotherSideP.y) {
 					y = worldSize.height;
@@ -34,6 +36,7 @@ export default class Line {
 				}
 				return {x: c.x, y: y};
 			} else if (jr.d_same(p1.x, p2.x)) {
+				if (! jr.d_same(p1.x, v.x) || ! jr.d_same(p2.x, v.x)) throw 'vが線上にない2'
 				let x;
 				if (c.x > anotherSideP.x) {
 					x = worldSize.width;
@@ -46,6 +49,7 @@ export default class Line {
 			}
 			function getEdge() :Point {
 				let d = (p1.x - p2.x) / (p2.y - p1.y);
+				if (! jr.d_same(v.y, f2(v.x))) throw 'vが線上にない3';
 				let pa = {x: 0, y: f2(0)};
 				if (side(pa) === side(anotherSideP)) {
 					let pb = {x: worldSize.width, y: f2(worldSize.width) };

@@ -12,21 +12,21 @@ export default class Circle {
 
 	// 与えられた3点から、その3つを円周上に持つ円を計算します。
 	static create(p1 :Point, p2 :Point, p3 :Point) :Circle|null {
-		let d = - determinant(p1.x * p1.x + p1.y * p1.y, p1.y, 1,
-				p2.x * p2.x + p2.y * p2.y, p2.y, 1,
-				p3.x * p3.x + p3.y * p3.y, p3.y, 1);
-		let e = determinant(p1.x * p1.x + p1.y * p1.y, p1.x, 1,
-				p2.x * p2.x + p2.y * p2.y, p2.x, 1,
-				p3.x * p3.x + p3.y * p3.y, p3.x, 1);
 		let a = determinant(p1.x, p1.y, 1,
 				p2.x, p2.y, 1,
 				p3.x, p3.y, 1);
-		let f = - determinant(p1.x * p1.x + p1.y * p1.y, p1.x, p1.y,
-				p2.x * p2.x + p2.y * p2.y, p2.x, p2.y,
-				p3.x * p3.x + p3.y * p3.y, p3.x, p3.y);
 		if (jr.d_same(a, 0)) {
 			return null;
 		} else {
+			let d = - determinant(p1.x * p1.x + p1.y * p1.y, p1.y, 1,
+					p2.x * p2.x + p2.y * p2.y, p2.y, 1,
+					p3.x * p3.x + p3.y * p3.y, p3.y, 1);
+			let e = determinant(p1.x * p1.x + p1.y * p1.y, p1.x, 1,
+					p2.x * p2.x + p2.y * p2.y, p2.x, 1,
+					p3.x * p3.x + p3.y * p3.y, p3.x, 1);
+			let f = - determinant(p1.x * p1.x + p1.y * p1.y, p1.x, p1.y,
+					p2.x * p2.x + p2.y * p2.y, p2.x, p2.y,
+					p3.x * p3.x + p3.y * p3.y, p3.x, p3.y);
 			let y0 = - e / 2.0 / a;
 			let x0 = - d / 2.0 / a;
 			let r = Math.sqrt((d * d + e * e) / 4.0 / a / a - f / a);

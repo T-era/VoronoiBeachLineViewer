@@ -7,7 +7,7 @@ export default {
 	d_same(a :number, b :number, border = 0.0001) :boolean {
 		return Math.abs(a-b) < border;
 	},
-	/// 浮動小数値を固定長文字列に整形します。
+	/// 浮動小数値を、デバッグのため固定長文字列に整形します。
 	dTo_2s(d :number) :string {
 		let sign = (d < 0 ? "-" : "");
 		let abs = Math.abs(d);
