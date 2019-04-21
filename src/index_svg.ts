@@ -1,4 +1,4 @@
-import { Point } from './types';
+import { Point, Size } from './types';
 import jr from './JunkRack';
 import Line from './Line';
 import Curve from './Curve';
@@ -8,33 +8,33 @@ import Node from './Voronoi/bl/Node';
 import Events from './Voronoi/bl/Events';
 import BeachLine from './Voronoi/BeachLine';
 import InitController from './controller';
-import Canvas2DDrawer from './drawer/Canvas2DDrawer';
+import SvgDrawer from './drawer/SvgDrawer';
 
 interface EventPointer {
 	clientX :number;
 	clientY :number;
 }
 $(function() {
-	let cnv = $("#canvas");
-	let canvas = cnv[0] as HTMLCanvasElement;
-	// 表示上のサイズに合わせて、描画領域のサイズを設定。(円が丸っこく見えるように)
-	canvas.height = canvas.width * canvas.offsetHeight / canvas.offsetWidth;
+	let svgs = $("#svg");
 
+	let svg = svgs[0] as HTMLElement;
+	let size :Size = svg.getBoundingClientRect();
+	let viewport = `0 0 ${size.width} ${size.height}`;
+	svg.setAttribute('viewport', viewport);
 	let isInitMode = false;
-
-	let context :CanvasRenderingContext2D = canvas.getContext("2d");
 
 	let logger = {
 		logAppend,
 		logClear,
 	};
-	let drawer = new Canvas2DDrawer(context, canvas, { isGiraffeMode: false });
-	let controller = new InitController(drawer, logger, canvas);
+	let setting = { isGiraffeMode: false };
+	let drawer = new SvgDrawer(svg, size, setting);
+	let controller = new InitController(drawer, logger, size);
 	setCommonEvents();
 	initMode();
 
 	function setCommonEvents() :void {
-		cnv.mousemove((e) => {
+		svgs.mousemove((e) => {
 			let l = oToL(e, e.target as HTMLCanvasElement);
 			let str = jr.showPoint(l);
 			$("#showPosition").val(str);
@@ -56,7 +56,7 @@ $(function() {
 		$("#backToInit").click(initMode);
 		$("#done").click(stepMode);
 		$("#giraffeMode").click(setGiraffeMode);
-		cnv.click((arg) => {
+		svgs.click((arg) => {
 			if (isInitMode) {
 				let target = arg.target;
 				let l = oToL(arg, target as HTMLCanvasElement);
@@ -72,18 +72,9 @@ $(function() {
 		function setGiraffeMode(event) :void {
 			let flg = event.target.checked;
 			if (!flg) alert("マジで...!?");
-			cnv.css({background: flg ? "#a80" : "#fff" });
+			svgs.css({background: flg ? "#a80" : "#fff" });
 			controller.setGiraffeMode(flg);
 		}
-	}
-
-	function drawSeed(seed :Point[]) :void {
-		seed.forEach((p) => {
-			context.beginPath();
-			context.strokeStyle = "#000";
-			context.arc(p.x, p.y, 2, 0, 7);
-			context.stroke();
-		});
 	}
 
 	function initMode() :void {
@@ -111,10 +102,12 @@ $(function() {
 	}
 	function oToL(p :EventPointer, target :HTMLCanvasElement) :Point {
 		return {
-			x: (p.clientX - target.getBoundingClientRect().left)
-				* target.width / target.offsetWidth,
-			y: (p.clientY - target.getBoundingClientRect().top)
-				* target.height / target.offsetHeight
+			x: p.clientX,
+			y: p.clientY
+			// x: (p.clientX - target.getBoundingClientRect().left)
+			// 	* target.width / target.offsetWidth,
+			// y: (p.clientY - target.getBoundingClientRect().top)
+			// 	* target.height / target.offsetHeight
 		};
 	}
 	/** デバッグ **/

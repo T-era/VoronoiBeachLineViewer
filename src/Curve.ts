@@ -39,6 +39,41 @@ export class Curv {
 			}
 		}
 	}
+	tangentCross(depth :number, x1 :number, x2 :number) :Point {
+		// y = ((x1 - x) ^ 2 + y1d - y2d) / 2 / dy;
+		// y = (x^2 - 2*x1*x + x1^2 + y1d - y2d) / 2 / dy;
+		// dy/dx = 2/2/dy * x - 2*x1/2/dy
+		//       = x/dy - x1/dy
+		if (jr.d_same(this.focus.y, depth)) {
+			return null;
+		} else {
+			let f = this.getF(depth);
+			let y1 = f(x1);
+			let y2 = f(x2);
+			let df = this.getDF(depth);
+			let d1 = df(x1);
+			let d2 = df(x2);
+			// y = d1*(x - x1) + y1 = d1*x - d1*x1 + y1
+			// y = d2*(x - x2) + y2 = d2*x - d2*x2 + y2
+			let cx = (d1*x1 - d2*x2 - y1 + y2) / (d1 - d2);
+			let cy = d1*(cx - x1) + y1;
+
+			return { x: cx, y: cy };
+		}
+	}
+	private getDF(depth :number) :F {
+		let x1 = this.focus.x;
+		let y1 = this.focus.y;
+		if (jr.d_same(y1, depth)) {
+			return (x:number) => { return undefined };
+		} else {
+			let dy = y1 - depth;
+			return (x :number) => {
+				return (x - x1) / dy;
+			}
+		}
+
+	}
 	cross(arg :Curv, dy :number) :CrossPoints {
 		if (this.focus.y === arg.focus.y) {
 			// 真横

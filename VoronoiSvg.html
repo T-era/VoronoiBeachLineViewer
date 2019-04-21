@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+<style type="text/css">
+html, body {
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+	height: 100%;
+}
+div.border {
+	border: 1px #aaf solid;
+}
+svg {
+	float: left;
+	width: 80%;
+	height: 80%;
+}
+textarea {
+	width: 100%;
+}
+input {
+	display: block;
+}
+svg>*:hover {
+	stroke-width: 5px;
+}
+</style>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="dest/index_svg.js"></script>
+	</head>
+	<body>
+		<svg id="svg" xmlns="http://www.w3.org/2000/svg">
+		</svg>
+		<div style="float: left;">
+			<input type="text" value="" id="showPosition" readonly />
+			<div class="border" id="BeachLineControl">
+				<input type="button" value="Next EVENT" id="eventButton" />
+				<input type="button" value="Next PIXEL" id="pixelButton" />
+				<input type="button" value="Run Through" id="runButton" />
+				<input type="button" value="(no animation)" id="runButton1" />
+				<hr/>
+				<input type="button" value="母点の配置を変える" id="backToInit" />
+				<hr/>
+				<input type="checkbox" id="giraffeMode" style="display: inline;" />きりんがすき。
+			</div>
+			<div class="border" id="Initializer">
+				<input type="button" value="ランダムに配置する" id="putRandom" />
+				<input type="button" value="まっさらに戻す" id="clearPoints" />
+				<input type="button" value="この配置でGO" id="done" />
+			</div>
+			<div class="border" id="Debug">
+				<input type="button" value="母点をログ" id="exportPoints" />
+			</div>
+		</div>
+		<textarea id="logView" readonly ></textarea>
+	</body>
+</html>

@@ -7,49 +7,47 @@ import MPoint from './Voronoi/MPoint';
 import Node from './Voronoi/bl/Node';
 import Events from './Voronoi/bl/Events';
 import BeachLine from './Voronoi/BeachLine';
-import Visualizer, { Context2DDrawer } from './Drawer';
+import Visualizer, { Drawer } from './Drawer';
 
-interface View {
+interface Logger {
 	logAppend(str :string) :void;
 	logClear() :void;
-	context() :CanvasRenderingContext2D;
-	drawSeed(seed :Point[]) :void;
-	clear() :void;
 }
 interface Window { initialSeeds :Point[]|null; }
 declare var window: Window;
 
 
 export default class InitController {
-	private view :View;
-	private setting :VoronoiSetting;
+	private logger :Logger;
 	private seed :Point[] = window.initialSeeds || [];
 	private beachLine :BeachLine;
-	drawer :Visualizer;
+	private drawer :Visualizer;
+	private size :Size;
 
-	constructor(view :View, worldSize :Size) {
-		this.view = view;
-		this.setting = { isGiraffeMode: false };
-		this.drawer = new Visualizer(new Context2DDrawer(view.context(), worldSize, this.setting))
-
+	constructor(drawer :Drawer, logger :Logger, worldSize :Size) {
+		this.logger = logger;
+		this.drawer = new Visualizer(drawer)
+		this.size = worldSize;
 	}
 	addSeed(point :Point) :void {
 		this.seed.push(point);
+		this.drawer.clearAll();
 		this.drawer.drawSeeds(this.seed);
 	}
 	initDrawing() {
-		this.beachLine = new BeachLine(this.seed, this.view.logAppend);
+		this.beachLine = new BeachLine(this.seed, this.logger.logAppend);
 	}
 	finishDrawing() {
 		this.beachLine = null;
 	}
-	addRandomSeed(count :number, size :Size) :void {
+	addRandomSeed(count :number) :void {
 		for (let i = 0; i < count; i ++) {
 			this.seed.push({
-				x: Math.random() * size.width,
-				y: Math.random() * size.height
+				x: Math.random() * this.size.width,
+				y: Math.random() * this.size.height
 			});
 		}
+		this.drawer.clearAll();
 		this.drawer.drawSeeds(this.seed);
 	}
 	clearSeed() :void {
@@ -57,32 +55,36 @@ export default class InitController {
 		this.drawer.clearAll();
 	}
 
-	stepPixel(size :Size) :void {
-		this.beachLine.stepPixel(size);
+	stepPixel() :void {
+		this.drawer.clearAll();
+		this.beachLine.stepPixel(this.size);
 		this.drawer.drawBeachLine(this.beachLine);
 	}
-	stepEvent(size :Size) :boolean {
-		let done = this.beachLine.stepNextEvent(size)
+	stepEvent() :boolean {
+		this.drawer.clearAll();
+		let done = this.beachLine.stepNextEvent(this.size)
 		this.drawer.drawBeachLine(this.beachLine);
 		return done;
 	}
-	runAll(size :Size) :void {
-		let done = this.stepEvent(size);
+	runAll() :void {
+		let done = this.stepEvent();
+		this.drawer.clearAll();
 		this.drawer.drawBeachLine(this.beachLine);
 
 		if (!done) {
-			setTimeout(() => { this.runAll(size); }, 1);
+			setTimeout(() => { this.runAll(); }, 1);
 		}
 	}
-	skipAll(size :Size) :void {
+	skipAll() :void {
 		do {
-		} while (!this.beachLine.stepNextEvent(size));
+		} while (!this.beachLine.stepNextEvent(this.size));
+		this.drawer.clearAll();
 		this.drawer.drawBeachLine(this.beachLine);
 	}
 	debugSeed(debugShow :(p:Point)=>string) :string {
 		return this.seed.map(debugShow).join(",")
 	}
 	setGiraffeMode(val :boolean) :void {
-		this.setting.isGiraffeMode = val;
+		this.drawer.setting().isGiraffeMode = val;
 	}
 }

@@ -4,6 +4,7 @@
   "description": "VoronoiBeachLineViewer",
   "scripts": {
     "build": "tsc src/index.ts --outDir temp/ && browserify temp/index.js --outfile dest/index.js",
+    "build_svg": "tsc src/index_svg.ts --outDir temp/ && browserify temp/index_svg.js --outfile dest/index_svg.js",
     "test": "mocha -r ts-node/register \"test/**/*.ts\""
   },
   "repository": {
