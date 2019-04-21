@@ -17,6 +17,13 @@ See also...
 
 And open `VoronoiCanvas.html` in your browser!
 
+### Unit-test:
+```sh
+> npm test
+```
+
 ## Specs
+### Arithmetical
 [計算式メモ](doc/specs.md)
+### Implementational
 [実装上の留意](doc/exceptional.md)

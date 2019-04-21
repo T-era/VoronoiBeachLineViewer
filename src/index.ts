@@ -30,7 +30,7 @@ $(function() {
 		drawSeed,
 		clear: context_clearAll
 	};
-	let controller = new InitController(view);
+	let controller = new InitController(view, canvas);
 	function context_clearAll() :void {
 		context.clearRect(0,0,canvas.width, canvas.height);
 	};

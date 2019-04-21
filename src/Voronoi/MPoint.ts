@@ -25,13 +25,4 @@ export default class MPoint implements Point {
 	toString() :string {
 		return this.str;
 	}
-
-	draw(context :CanvasRenderingContext2D, setting :VoronoiSetting) :void {
-		if (! setting.isGiraffeMode) {
-			context.beginPath();
-			context.strokeStyle = "#88f";
-			context.arc(this.x, this.y, 2, 0, 7);
-			context.stroke();
-		}
-	}
 }

@@ -17,7 +17,7 @@ export default class Node {
 	next :Node|null;
 	circle :Circle|null;
 	circleEventDepth :number|null;
-	private lr :Flr;
+	lr :Flr;
 
 	constructor(motherPoint :MPoint) {
 		this.mPoint = motherPoint;
@@ -147,15 +147,4 @@ export default class Node {
 			f(temp);
 		}
 	};
-
-	draw(context, depth :number, size :Size) :void {
-		let c1 = this.prev ? CCurve.curveCrosses(depth, this.prev.mPoint, this.mPoint) : null;
-		let c2 = this.next ? CCurve.curveCrosses(depth, this.mPoint, this.next.mPoint) : null;
-		let p1 = c1 ? this.prev.lr(c1) : { x: 0, y: 0 };
-		let p2 = c2 ? this     .lr(c2) : { x: size.width, y: 0 };
-
-		context.strokeStyle = "#aaa";
-		let curve = CCurve.create(this.mPoint);
-		curve.draw(context, depth, Math.max(p1.x, 0), Math.min(p2.x, size.width));
-	}
 }

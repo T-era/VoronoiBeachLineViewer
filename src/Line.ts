@@ -4,20 +4,14 @@ import jr from './JunkRack'
 type Comp = -1|0|1;
 
 export default class Line {
-	private p1 :Point;
-	private p2 :Point;
+	p1 :Point;
+	p2 :Point;
 
 	constructor(p1 :Point, p2 :Point) {
 		this.p1 = p1;
 		this.p2 = p2;
 	}
 
-	draw(context :CanvasRenderingContext2D) :void {
-		context.beginPath();
-		context.moveTo(this.p1.x, this.p1.y);
-		context.lineTo(this.p2.x, this.p2.y);
-		context.stroke();
-	}
 	/// p1, p2 の中点を通り、もう一点と反対方向に延びる線分を返します。
 	/// この関数が返すLineは、半直線です。
 	/// 終端はv(Voronoi点)で、他方の端は数学的には終端を持ちません(無限に伸びています)。実装上はworldSizeの境界上になります。

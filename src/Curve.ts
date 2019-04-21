@@ -20,7 +20,7 @@ export interface CrossPoints {
 type F = (x :number)=>number;
 
 export class Curv {
-	private focus :Point
+	focus :Point
 
 	constructor(focus :Point) {
 		this.focus = focus;
@@ -82,22 +82,5 @@ export class Curv {
 			};
 
 		}
-	}
-
-	draw(context :CanvasRenderingContext2D, dy :number, fromX :number, toX :number) :void {
-		if (this.focus.y === dy) {
-			return;
-		}
-		let f = this.getF(dy);
-		let px = fromX;
-		let py = f(px);
-
-		context.beginPath();
-		context.moveTo(px, py);
-		for (let x = fromX; x < toX; x += 0.1) {
-			let y = f(x);
-			context.lineTo(x, y);
-		}
-		context.stroke();
 	}
 }

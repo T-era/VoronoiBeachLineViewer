@@ -2,12 +2,12 @@ import jr from '../../JunkRack';
 import MPoint from '../MPoint';
 import Node from './Node';
 import BeachLine from '../BeachLine';
-
+import { Drawer, Draw } from '../../Drawer';
 
 export interface Event {
 	eventBorder :number;
 	action(topNode :Node|null):void;
-	draw(context :CanvasRenderingContext2D) :void;
+	selectDraw(drawer :Drawer) :Draw;
 	toString() :string;
 }
 export default {
@@ -20,8 +20,8 @@ export default {
 				beachLine.addVPoint(removing.circle.center, removing.mPoint, removing.prev.mPoint, removing.next.mPoint);
 				return removing.remove();
 			},
-			draw: function(context :CanvasRenderingContext2D) :void {
-				circle.draw(context);
+			selectDraw(drawer :Drawer) :Draw {
+				return drawer.circleEventDraw(circle);
 			},
 			toString: function() {
 				return "Circle " + jr.showPoint(removing.circle.center);
@@ -33,7 +33,7 @@ export default {
 			eventBorder: newPoint.y,
 			action: function(topNode) {
 				if (topNode) {
-					let ownerNode = topNode.seek(function(node) {
+					let ownerNode = topNode.seek((node) => {
 						return node.containsRangeX(newPoint.x, newPoint.y);
 					});
 					ownerNode = ownerNode == null ? last(topNode) : ownerNode;
@@ -47,12 +47,8 @@ export default {
 					else return node;
 				}
 			},
-			draw: function(context :CanvasRenderingContext2D) :void {
-				context.beginPath();
-				context.strokeStyle = "#f00";
-				context.moveTo(newPoint.x, newPoint.y);
-				context.lineTo(newPoint.x, 0);
-				context.stroke();
+			selectDraw(drawer :Drawer) :Draw {
+				return drawer.sightEventDraw(newPoint);
 			},
 			toString: function() {
 				return "Sight " + jr.showPoint(newPoint);

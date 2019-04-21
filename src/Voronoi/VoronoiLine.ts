@@ -3,14 +3,14 @@ import MPoint from './MPoint';
 import Line from '../Line';
 
 export default class VoronoiLine {
-	private mPoint1 :MPoint;
-	private mPoint2 :MPoint;
-	private another :MPoint;
-	private vPoint :Point;
+	mPoint1 :MPoint;
+	mPoint2 :MPoint;
+	another :MPoint;
+	vPoint :Point;
 	private str :string;
 
-	private static Unclosed : { [key :string] :VoronoiLine } = {};
-	private static Closed :Line[] = [];
+	static Unclosed : { [key :string] :VoronoiLine } = {};
+	static Closed :Line[] = [];
 
 	constructor(mPoint1 :MPoint, mPoint2 :MPoint, vPoint :Point, another :MPoint) {
 		this.mPoint1 = mPoint1;
@@ -36,22 +36,6 @@ export default class VoronoiLine {
 			delete VoronoiLine.Unclosed[uKey];
 		} else {
 			VoronoiLine.Unclosed[uKey] = vLine;
-		}
-	}
-	static draw(context :CanvasRenderingContext2D, size :Size, setting :VoronoiSetting) :void {
-		if (setting.isGiraffeMode) {
-			context.lineWidth = 10;
-			context.strokeStyle = "#ff8";
-		} else {
-			context.strokeStyle = "#080"
-		}
-		VoronoiLine.Closed.forEach((l) => {
-			l.draw(context);
-		});
-		for (let key in VoronoiLine.Unclosed) {
-			let vl = VoronoiLine.Unclosed[key];
-			let l = Line.getBisector(vl.vPoint, vl.mPoint1, vl.mPoint2, vl.another, size);
-			l.draw(context);
 		}
 	}
 }

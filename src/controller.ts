@@ -7,6 +7,7 @@ import MPoint from './Voronoi/MPoint';
 import Node from './Voronoi/bl/Node';
 import Events from './Voronoi/bl/Events';
 import BeachLine from './Voronoi/BeachLine';
+import Visualizer, { Context2DDrawer } from './Drawer';
 
 interface View {
 	logAppend(str :string) :void;
@@ -24,14 +25,17 @@ export default class InitController {
 	private setting :VoronoiSetting;
 	private seed :Point[] = window.initialSeeds || [];
 	private beachLine :BeachLine;
+	drawer :Visualizer;
 
-	constructor(view :View) {
+	constructor(view :View, worldSize :Size) {
 		this.view = view;
 		this.setting = { isGiraffeMode: false };
+		this.drawer = new Visualizer(new Context2DDrawer(view.context(), worldSize, this.setting))
+
 	}
 	addSeed(point :Point) :void {
 		this.seed.push(point);
-		this.view.drawSeed(this.seed);
+		this.drawer.drawSeeds(this.seed);
 	}
 	initDrawing() {
 		this.beachLine = new BeachLine(this.seed, this.view.logAppend);
@@ -46,25 +50,25 @@ export default class InitController {
 				y: Math.random() * size.height
 			});
 		}
-		this.view.drawSeed(this.seed);
+		this.drawer.drawSeeds(this.seed);
 	}
 	clearSeed() :void {
 		this.seed = [];
-		this.view.clear();
+		this.drawer.clearAll();
 	}
 
 	stepPixel(size :Size) :void {
 		this.beachLine.stepPixel(size);
-		this.beachLine.draw(this.view.context(), size, this.setting);
+		this.drawer.drawBeachLine(this.beachLine);
 	}
 	stepEvent(size :Size) :boolean {
 		let done = this.beachLine.stepNextEvent(size)
-		this.beachLine.draw(this.view.context(), size, this.setting);
+		this.drawer.drawBeachLine(this.beachLine);
 		return done;
 	}
 	runAll(size :Size) :void {
 		let done = this.stepEvent(size);
-		this.beachLine.draw(this.view.context(), size, this.setting);
+		this.drawer.drawBeachLine(this.beachLine);
 
 		if (!done) {
 			setTimeout(() => { this.runAll(size); }, 1);
@@ -73,7 +77,7 @@ export default class InitController {
 	skipAll(size :Size) :void {
 		do {
 		} while (!this.beachLine.stepNextEvent(size));
-		this.beachLine.draw(this.view.context(), size, this.setting);
+		this.drawer.drawBeachLine(this.beachLine);
 	}
 	debugSeed(debugShow :(p:Point)=>string) :string {
 		return this.seed.map(debugShow).join(",")

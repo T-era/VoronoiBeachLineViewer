@@ -9,14 +9,14 @@ type Logger = (msg :string)=>void;
 type NodeSort = (a :Node, b:Node)=>number;
 
 export default class BeachLine {
-	private voronoiPoints :Point[];
+	voronoiPoints :Point[];
 	private sightPointIndex :number;
-	private depth :number;
-	private seedCount :number;
+	depth :number;
+	seedCount :number;
 	private seedSortedByY :MPoint[];
 	private logger :Logger;
-	private topNode :Node|null;
-	private lastEvent :Event|null;
+	topNode :Node|null;
+	lastEvent :Event|null;
 
 	constructor(arg :Point[], logger :Logger) {
 		this.voronoiPoints = [];
@@ -25,10 +25,10 @@ export default class BeachLine {
 		let seed = jr.uniqueList(arg, function(p1, p2) {
 			return jr.d_same(p1.x, p2.x, 3)
 				&& jr.d_same(p1.y, p2.y, 3);
-		}).map(function(p) { return new MPoint(p); });
+		}).map((p) => { return new MPoint(p); });
 		this.seedCount = seed.length;
 		logger(seed.length + "　points.");
-		this.seedSortedByY = seed.sort(function(a, b) {
+		this.seedSortedByY = seed.sort((a, b) => {
 			if (a.y == b.y) {
 				return a.x - b.x;
 			} else {
@@ -75,7 +75,9 @@ export default class BeachLine {
 					action: function(topNode) {
 						return topNode;
 					},
-					draw: function(context) {}
+					selectDraw: function(drawer) {
+						return () => {};
+					}
 				};
 				done = true;
 			}
@@ -107,43 +109,10 @@ export default class BeachLine {
 		}
 	};
 
-	draw(context :CanvasRenderingContext2D, size :Size, setting :VoronoiSetting) :void {
-		context.clearRect(0,0, size.width, size.height);
-
-		if (this.lastEvent)
-			this.lastEvent.draw(context);
-
-		context.beginPath();
-		context.strokeStyle = "#aaa";
-		context.moveTo(0, this.depth);
-		context.lineTo(size.width, this.depth);
-		context.stroke();
-
-		if (this.topNode) {
-			let d = this.depth;
-			this.topNode.forEachNode(function(node) {
-				node.draw(context, d, size);
-			});
-		}
-		for (let i = 0, max = this.seedCount; i < max; i ++) {
-			let p = this.getSeedAt(i);
-			p.draw(context, setting);
-		}
-		VoronoiLine.draw(context, size, setting);
-		if (!setting.isGiraffeMode) {
-			context.strokeStyle = "#f00";
-			this.voronoiPoints.forEach(function(v) {
-				context.beginPath();
-				context.arc(v.x, v.y, 2, 0, 7);
-				context.stroke();
-			});
-		}
-	};
-
 	getNextCircleEvent() :Node|null {
 		let nextSight = this.getNextSight();
 		// Seek circle event
-		let circleEventQueue = this.toList(function(o1, o2) {
+		let circleEventQueue = this.toList((o1, o2) => {
 			if (o1.circleEventDepth
 				&& o2.circleEventDepth)
 				return o1.circleEventDepth - o2.circleEventDepth;
@@ -168,7 +137,7 @@ export default class BeachLine {
 	toList(fSort :NodeSort) :Node[] {
 		let list = [];
 		if (this.topNode) {
-			this.topNode.forEachNode(function(n) {
+			this.topNode.forEachNode((n) => {
 				list.push(n);
 			});
 		}

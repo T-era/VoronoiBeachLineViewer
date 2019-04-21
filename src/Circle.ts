@@ -45,15 +45,4 @@ export default class Circle {
 					- c * e * g;
 		}
 	}
-
-	draw(context :CanvasRenderingContext2D) :void {
-		context.beginPath();
-		context.strokeStyle = "#f88";
-		context.arc(this.center.x, this.center.y, this.r, 0, 7);
-		context.stroke();
-		context.beginPath();
-		context.strokeStyle = "#f00";
-		context.arc(this.center.x, this.center.y, 2, 0, 7);
-		context.stroke();
-	}
 }
