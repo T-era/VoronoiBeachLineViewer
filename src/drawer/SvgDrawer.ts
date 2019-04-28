@@ -14,11 +14,13 @@ export default class SvgDrawer implements Drawer {
 	parent :HTMLElement;
 	size :Size;
 	setting :VoronoiSetting;
+	gByMPoint : { [key :string] :SVGGElement }
 
 	constructor(parent :HTMLElement, size :Size, setting :VoronoiSetting) {
 		this.parent = parent;
 		this.size = size;
 		this.setting = setting;
+		this.gByMPoint = {};
 	}
 
 	clearAll() :void {
@@ -27,6 +29,7 @@ export default class SvgDrawer implements Drawer {
 			let node = children[i];
 			this.parent.removeChild(node);
 		}
+		this.gByMPoint = {};
 	}
 	drawSeed(seed :Point) :void {
 		let circle = document.createElementNS('http://www.w3.org/2000/svg', "circle");
@@ -59,22 +62,48 @@ export default class SvgDrawer implements Drawer {
 			let y1 = f(x1);
 			let x2 = p2.x;
 			let y2 = f(x2);
+
+			let mPointStr = node.mPoint.toString();
+			let gInDict = this.gByMPoint[mPointStr];
+			let g = gInDict;
+			if (! gInDict) {
+				g = document.createElementNS('http://www.w3.org/2000/svg', "g");
+			}
+
 			let path = document.createElementNS('http://www.w3.org/2000/svg', "path");
 			path.setAttribute("d", `M ${x1} ${y1} Q ${sp.x} ${sp.y} ${x2} ${y2}`);
 			path.setAttribute("stroke", "#aaa");
 			path.setAttribute("fill", "#fff");
-			this.parent.appendChild(path);
+			g.appendChild(path);
+			if (! gInDict) {
+				// 初回だけMPointを描画する
+				this.drawMPoint(node.mPoint, g);
+
+				this.gByMPoint[mPointStr] = g;
+			}
+			this.parent.appendChild(g);
 		}
 	}
-	drawMPoint(mPoint :MPoint) :void {
+	drawMPoint(mPoint :MPoint, g :SVGGElement = null) :void {
+		let mPointStr = mPoint.toString();
+
+		if (this.gByMPoint[mPointStr]) {
+			return;
+		}
 		if (! this.setting.isGiraffeMode) {
 			let circle = document.createElementNS('http://www.w3.org/2000/svg', "circle");
 			circle.setAttribute("cx", "" + mPoint.x);
 			circle.setAttribute("cy", "" + mPoint.y);
 			circle.setAttribute("r", "2");
 			circle.setAttribute("fill", "#88f");
-			this.parent.appendChild(circle);
+			circle.setAttribute("stroke", "#88f");
+			if (g) {
+				g.appendChild(circle);
+			} else {
+				this.parent.appendChild(circle);
+			}
 		}
+		// drawNode のついでで描画するので、ここでは描画しない
 	}
 	drawVoronoiLine(voronoiLine :VoronoiLineType) :void {
 		voronoiLine.Closed.forEach((l) => {
